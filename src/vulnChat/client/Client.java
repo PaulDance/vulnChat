@@ -1,4 +1,4 @@
-package oChat.client;
+package vulnChat.client;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -41,7 +41,7 @@ public class Client {
 	
 	public Client() throws IOException {
 		this.internals = new ClientInternals();
-		this.title = "oChat";
+		this.title = "vulnChat";
 	}
 	
 	public final void start() {

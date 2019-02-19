@@ -1,4 +1,4 @@
-package oChat.server;
+package vulnChat.server;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;

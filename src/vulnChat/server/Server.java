@@ -1,4 +1,4 @@
-package oChat.server;
+package vulnChat.server;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

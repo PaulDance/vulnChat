@@ -3,6 +3,8 @@ package vulnChat.server;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
@@ -13,9 +15,16 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.HashMap;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 
 public class Server {
@@ -26,12 +35,56 @@ public class Server {
 	private boolean isRunning = false;
 	
 	public static void main(String[] args) throws IOException {
-		Server srv = new Server();
-		srv.start();
+		JFrame portFrame = new JFrame("Configuration");
+		portFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+		
+		JPanel portPanel = new JPanel();
+		JTextField portField = new JTextField("4321", 6);
+		portPanel.add(new JLabel("Server Port", SwingConstants.LEFT));
+		portPanel.add(portField);
+		mainPanel.add(portPanel);
+		
+		JPanel buttonsPanel = new JPanel();
+		JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");
+		okButton.setActionCommand("ok");
+		cancelButton.setActionCommand("cancel");
+		ActionListener cmdListen = new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				if (event.getActionCommand().equals("ok")) {
+					if (portField.getText().matches("^[0-9]+$")) {
+						try {
+							(new Thread(new ServerStarter(new Server(Integer.parseInt(portField.getText()))))).start();
+//						} catch (NumberFormatException e) {
+//							e.printStackTrace();
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				portFrame.dispose();
+			}
+		};
+		okButton.addActionListener(cmdListen);
+		cancelButton.addActionListener(cmdListen);
+		buttonsPanel.add(okButton);
+		buttonsPanel.add(cancelButton);
+		mainPanel.add(buttonsPanel);
+		
+		portFrame.add(mainPanel);
+		portFrame.setResizable(false);
+		portFrame.pack();
+		portFrame.setVisible(true);
+		portFrame.requestFocus();
 	}
 	
 	public Server() throws IOException {
-		this(8080);
+		this(4321);
 	}
 	
 	public Server(int port) throws IOException {
@@ -39,7 +92,7 @@ public class Server {
 		this.clientsMap = new HashMap<String, ClientEntry>();
 		
 		this.frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JTextArea printArea = new JTextArea(20, 90);
 		printArea.setBackground(Color.BLACK);
 		printArea.setForeground(Color.LIGHT_GRAY);
@@ -87,9 +140,7 @@ public class Server {
 		
 		while (this.frame.isEnabled() && this.isRunning) {
 			try {
-				ClientWorker clientWorker = new ClientWorker(this, this.connSocket.accept());
-				Thread clientThread = new Thread(clientWorker);
-				clientThread.start();
+				(new Thread(new ClientWorker(this, this.connSocket.accept()))).start();
 			}
 			catch (SocketException exc) {
 				exc.printStackTrace(this.printStream);

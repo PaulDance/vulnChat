@@ -45,7 +45,7 @@ public class Client {
 	}
 	
 	public final void start() {
-		JFrame idFrame = new JFrame("Configuation");
+		JFrame idFrame = new JFrame("Configuration");
 		idFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
@@ -57,7 +57,7 @@ public class Client {
 		mainPanel.add(srvIPpanel);
 		
 		JPanel srvPortPanel = new JPanel();
-		JTextField srvPortField = new JTextField("8080", 5);
+		JTextField srvPortField = new JTextField("4321", 5);
 		srvPortPanel.add(new JLabel("Server Port", SwingConstants.LEFT));
 		srvPortPanel.add(srvPortField);
 		mainPanel.add(srvPortPanel);

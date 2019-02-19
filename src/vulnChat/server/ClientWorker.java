@@ -36,12 +36,13 @@ public class ClientWorker implements Runnable {
 				clientMsg = inFromConnect.readLine();
 				this.server.getPrintStream().println(this.commSocket.getInetAddress() + ", " + this.commSocket.getPort() + ": " + clientMsg);
 				
-				if (clientMsg.matches("[a-z]{3}\\s[\\p{Alnum}\\p{Punct}]{1,50}\\s?.{0,1000}")) {		// [\\p{Alnum}\\p{Punct}\\p{Print}]
+				if (clientMsg.matches("[a-z]{3}\\s[\\p{Alnum}\\p{Punct}]{1,50}\\s?.{0,1000}")) {
 					String[] elements = clientMsg.split(" ", 3);
 					
 					if (elements[0].equals("new")) {
 						if (!this.server.getClientsMap().containsKey(elements[1])) {
-							this.server.getClientsMap().put(elements[1],	new ClientEntry(new BufferedReader(new InputStreamReader(this.commSocket.getInputStream())),
+							this.server.getClientsMap().put(elements[1],	new ClientEntry(this.commSocket.getInetAddress(),
+																			new BufferedReader(new InputStreamReader(this.commSocket.getInputStream())),
 																			new PrintWriter(this.commSocket.getOutputStream(), true)));
 							this.distributeMsg(clientMsg, elements[1]);
 							this.server.getPrintStream().println("ok new");
@@ -56,8 +57,8 @@ public class ClientWorker implements Runnable {
 						}
 					}
 					else if (elements[0].equals("bye")) {
-						this.server.getClientsMap().get(elements[1]).in().close();
-						this.server.getClientsMap().get(elements[1]).out().close();
+						this.server.getClientsMap().get(elements[1]).in.close();
+						this.server.getClientsMap().get(elements[1]).out.close();
 						this.server.getClientsMap().remove(elements[1]);
 						this.distributeMsg(clientMsg, elements[1]);
 						this.server.getPrintStream().println("ok bye");
@@ -96,7 +97,7 @@ public class ClientWorker implements Runnable {
 		for (String client: this.server.getClientsMap().keySet()) {
 			if (!client.equals(sender)) {
 				this.server.getPrintStream().println(msg + " --> " + client);
-				this.server.getClientsMap().get(client).out().println(msg);
+				this.server.getClientsMap().get(client).out.println(msg);
 			}
 		}
 	}

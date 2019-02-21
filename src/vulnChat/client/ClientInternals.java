@@ -6,7 +6,12 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 
-
+/**
+ * Dummy class simulating a tuple holding the necessary information for a client object to communicate with a chat server
+ * in order to enable its use in an anonymous class instance which refuses access to non-final objects.
+ * @author Paul Mabileau
+ * @version 0.1
+ */
 public class ClientInternals {
 	private Socket clientSocket;
 	private BufferedReader fromServerReader;

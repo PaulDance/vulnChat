@@ -55,16 +55,16 @@ public class Server {
 			public void actionPerformed(ActionEvent event) {
 				if (event.getActionCommand().equals("ok")) {
 					if (portField.getText().matches("^[0-9]+$")) {
-						try {
-							(new Thread(new ServerStarter(new Server(Integer.parseInt(portField.getText()))))).start();
-//						} catch (NumberFormatException e) {
-//							e.printStackTrace();
-//						} catch (IOException e) {
-//							e.printStackTrace();
-//						}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+						(new Thread(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									(new Server(Integer.parseInt(portField.getText()))).start();
+								} catch (NumberFormatException | IOException e) {
+									e.printStackTrace();
+								}
+							}
+						})).start();
 					}
 				}
 				portFrame.dispose();

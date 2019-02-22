@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+
 /**
  * This class extends the JFrame graphical frame class to create a small window containing a
  * simple text area on black background you can print to using the generated PrintStream.

@@ -66,8 +66,8 @@ public class Server {
 					e.printStackTrace(Server.this.getPrintStream());
 				}
 				
-				while (Server.this.console.isEnabled() && Server.this.isRunning) {
-					try {
+				while (Server.this.console.isEnabled() && Server.this.isRunning) {		// Loop while authorized to
+					try {																// wait and receive the connection of a new client;
 						(new Thread(new ClientWorker(Server.this, Server.this.connSocket.accept()))).start();
 					}
 					catch (IOException exc) {
@@ -76,7 +76,7 @@ public class Server {
 				}
 				
 				try {
-					Server.this.close();
+					Server.this.close();												// when done looping, close everything.
 				} catch (IOException e) {
 					e.printStackTrace(Server.this.getPrintStream());
 				}

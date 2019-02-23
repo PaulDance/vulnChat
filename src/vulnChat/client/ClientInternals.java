@@ -23,7 +23,7 @@ public class ClientInternals {
 	}
 	
 	public final Socket getClientSocket() {
-		return clientSocket;
+		return this.clientSocket;
 	}
 	
 	public final void setClientSocket(Socket clientSocket) throws SocketException {
@@ -31,7 +31,7 @@ public class ClientInternals {
 	}
 	
 	public final BufferedReader getFromServerReader() {
-		return fromServerReader;
+		return this.fromServerReader;
 	}
 	
 	public final void setFromServerReader(BufferedReader fromServerReader) {
@@ -39,7 +39,7 @@ public class ClientInternals {
 	}
 	
 	public final PrintWriter getToServerWriter() {
-		return toServerWriter;
+		return this.toServerWriter;
 	}
 	
 	public final void setToServerWriter(PrintWriter toServerWriter) {
@@ -47,7 +47,7 @@ public class ClientInternals {
 	}
 	
 	public final PrintStream getPrintStream() {
-		return printStream;
+		return this.printStream;
 	}
 	
 	public final void setPrintStream(PrintStream printStream) {

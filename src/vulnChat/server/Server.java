@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import javax.swing.JFrame;
 
+
 /**
  * This class starts and manages a vulnerable chat messaging server. It starts by opening a configuration
  * dialog to ask the user for the port to start listening on. Then, it will display information about the
@@ -87,7 +88,10 @@ public class Server {
 	public final ServerSocket getConnSocket() {
 		return this.connSocket;
 	}
-
+	
+	/**
+	 * @return The clients map of this server. It is used to store in memory clients connected to the server.
+	 */
 	public final HashMap<String, ClientEntry> getClientsMap() {
 		return this.clientsMap;
 	}
@@ -95,11 +99,17 @@ public class Server {
 	public final JFrame getFrame() {
 		return this.console;
 	}
-
+	
+	/**
+	 * @return The {@link PrintStream} that enables one to print to the server's console.
+	 */
 	public final PrintStream getPrintStream() {
 		return this.console.printStream;
 	}
 	
+	/**
+	 * @return The boolean stating whether this server is currently running or not.
+	 */
 	public final boolean isRunning() {
 		return this.isRunning;
 	}

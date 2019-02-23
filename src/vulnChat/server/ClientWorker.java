@@ -8,7 +8,7 @@ import java.net.Socket;
 
 
 /**
- * This {@linkplain Runnable} class implements the receiving from one client only and distributing
+ * This {@link Runnable} class implements the receiving from one client only and distributing
  * of its chat messages to all the other clients. It is meant to be constructed for use by a Thread object:
  * the waiting for a new message from the managed client by an instance of this class causes the execution
  * flow to block until a line of text is received from the network.
@@ -23,9 +23,9 @@ public class ClientWorker implements Runnable {
 	private boolean isRunning = false;
 	
 	/**
-	 * Constructs a {@linkplain ClientWorker} objects connected to the calling chat {@linkplain Server} and its communication {@linkplain Socket} 
-	 * @param server - the {@linkplain Server} object that calls this constructor
-	 * @param commSocket - the {@linkplain Socket} object of the server linked to the newly connected client
+	 * Constructs a {@link ClientWorker} objects connected to the calling chat {@link Server} and its communication {@link Socket} 
+	 * @param server - the {@link Server} object that calls this constructor
+	 * @param commSocket - the {@link Socket} object of the server linked to the newly connected client
 	 */
 	public ClientWorker(Server server, Socket commSocket) {
 		this.server = server;
@@ -113,8 +113,8 @@ public class ClientWorker implements Runnable {
 	
 	/**
 	 * Distributes a message to all the clients connected to the server, except the sender.
-	 * @param msg - the message as a {@linkplain String} meant to be sent over the network
-	 * @param sender - the chatter nickname as a {@linkplain String} of the sending client
+	 * @param msg - the message as a {@link String} meant to be sent over the network
+	 * @param sender - the chatter nickname as a {@link String} of the sending client
 	 */
 	private final void distributeMsg(String msg, String sender) {
 		for (String client: this.server.getClientsMap().keySet()) {					// For all the clients of the server,
@@ -124,7 +124,7 @@ public class ClientWorker implements Runnable {
 			}
 		}
 	}
-
+	
 	protected final void finalize() throws IOException {
 		this.isRunning = false;
 		this.commSocket.close();

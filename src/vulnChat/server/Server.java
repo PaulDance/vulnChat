@@ -84,20 +84,12 @@ public class Server {
 			}
 		})).start();
 	}
-		
-	public final ServerSocket getConnSocket() {
-		return this.connSocket;
-	}
 	
 	/**
 	 * @return The clients map of this server. It is used to store in memory clients connected to the server.
 	 */
 	public final HashMap<String, ClientEntry> getClientsMap() {
 		return this.clientsMap;
-	}
-
-	public final JFrame getFrame() {
-		return this.console;
 	}
 	
 	/**

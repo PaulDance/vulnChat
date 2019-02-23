@@ -9,8 +9,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
-import javax.swing.JFrame;
-
 
 /**
  * This class starts and manages a vulnerable chat messaging server. It starts by opening a configuration
@@ -77,7 +75,7 @@ public class Server {
 				}
 				
 				try {
-					Server.this.close();												// when done looping, close everything.
+					Server.this.stop();												// when done looping, close everything.
 				} catch (IOException e) {
 					e.printStackTrace(Server.this.getPrintStream());
 				}
@@ -110,9 +108,9 @@ public class Server {
 	 * Stops and closes the server part of this application. Triggered by window closing.
 	 * @throws IOException
 	 */
-	public void close() throws IOException {
+	public void stop() throws IOException {
 		this.isRunning = false;
-		this.console.dispose();
+		this.console.stop();
 		this.connSocket.close();
 	}
 }

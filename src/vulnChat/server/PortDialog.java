@@ -58,7 +58,7 @@ public class PortDialog extends JFrame {
 						}
 					}
 				}
-				PortDialog.this.dispose();										// in any other case, the application closes.
+				PortDialog.this.stop();											// in any other case, the application closes.
 			}
 		};
 		
@@ -79,5 +79,12 @@ public class PortDialog extends JFrame {
 		this.pack();
 		this.setVisible(true);
 		this.requestFocus();
+	}
+	
+	/**
+	 * Stops the dialog and releases all of the native screen resources used.
+	 */
+	public void stop() {
+		this.dispose();
 	}
 }

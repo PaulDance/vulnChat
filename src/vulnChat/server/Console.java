@@ -74,4 +74,12 @@ public class Console extends JFrame {
 		this.setVisible(true);
 		this.requestFocus();
 	}
+	
+	/**
+	 * Stops the console and frees resources associated with it.
+	 */
+	public void stop() {
+		this.printStream.close();
+		this.dispose();
+	}
 }

@@ -70,6 +70,7 @@ public class ConfigDialog extends JFrame {
 							client.setRunning(true);
 							(new Thread(new ServerWorker(client))).start();
 							client.startChatWindow();
+							client.getInternals().getPrintStream().println(nickname + " joined the channel.");
 						} catch (NumberFormatException | IOException e) {
 							e.printStackTrace();
 						}

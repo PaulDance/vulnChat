@@ -2,10 +2,13 @@ package vulnChat.server;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,13 +17,15 @@ import javax.swing.SwingConstants;
 
 
 /**
- * Starts and displays the server's port dialog on startup. Extends JFrame.
+ * Starts and displays the server's configuration dialog on startup, enabling the modification
+ * of the port the server will start on and its difficulty settings.
+ * @see Settings
  * @see JFrame
  * @see Server
  * @author Paul Mabileau
  * @version 0.1
 */
-public class PortDialog extends JFrame {
+public class ConfigDialog extends JFrame {
 	private static final long serialVersionUID = 226780886731769923L;
 	
 	/**
@@ -29,10 +34,11 @@ public class PortDialog extends JFrame {
 	 * @param defaultPort - The string representing the port number the server will then open its socket on.
 	 * @see Server
 	 */
-	public PortDialog(String title, String defaultPort) {
+	public ConfigDialog(String title, String defaultPort) {
 		super(title);
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);				// Kill this window only when closed with cross button.
 		
+		Settings serverSettings = new Settings();
 		JPanel mainPanel = new JPanel();										// A panel is a way to structure the widgets with a logical tree formation,
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 		
@@ -47,26 +53,48 @@ public class PortDialog extends JFrame {
 		okButton.setActionCommand("ok");
 		cancelButton.setActionCommand("cancel");
 		
-		ActionListener cmdListen = new ActionListener() {						// Defines an event listener anonymous class instance that will catch
+		ActionListener buttonListen = new ActionListener() {					// Defines an event listener anonymous class instance that will catch
 			@Override public void actionPerformed(ActionEvent event) {			// events related to buttons,it will be used for the ok and cancel buttons here:
 				if (event.getActionCommand().equals("ok")) {					// if ok is clicked,
 					if (portField.getText().matches("^[0-9]+$")) {				// and if the information typed corresponds to a port number,
 						try {													// then start the server.
-							(new Server(Integer.parseInt(portField.getText()))).start();
+							(new Server(Integer.parseInt(portField.getText()), serverSettings)).start();
 						} catch (NumberFormatException | IOException e) {
 							e.printStackTrace();
 						}
 					}
 				}
-				PortDialog.this.stop();											// in any other case, the application closes.
+				ConfigDialog.this.stop();										// in any other case, the application closes.
 			}
 		};
 		
-		okButton.addActionListener(cmdListen);
-		cancelButton.addActionListener(cmdListen);
+		okButton.addActionListener(buttonListen);
+		cancelButton.addActionListener(buttonListen);
 		buttonsPanel.add(okButton);
 		buttonsPanel.add(cancelButton);
 		mainPanel.add(buttonsPanel);
+		
+		JPanel checkBoxesPanel = new JPanel();
+		checkBoxesPanel.setLayout(new BoxLayout(checkBoxesPanel, BoxLayout.PAGE_AXIS));
+		JCheckBox checkNewClientName = new JCheckBox("Refuse a new connection with an already existing nickname");
+		checkNewClientName.setSelected(serverSettings.checkNewClientName);
+		
+		JCheckBox checkClientIP = new JCheckBox("Check the client's IP address");
+		checkClientIP.setSelected(serverSettings.checkClientIP);
+		
+		ItemListener checkListen = new ItemListener() {
+			@Override public void itemStateChanged(ItemEvent event) {
+				serverSettings.checkNewClientName = checkNewClientName.isSelected();
+				serverSettings.checkClientIP = checkClientIP.isSelected();
+			}
+		};
+		
+		checkNewClientName.addItemListener(checkListen);
+		checkClientIP.addItemListener(checkListen);
+		
+		checkBoxesPanel.add(checkNewClientName);
+		checkBoxesPanel.add(checkClientIP);
+		mainPanel.add(checkBoxesPanel);
 		
 		this.add(mainPanel);													// Finally you connect the main panel which holds everything to the frame.
 		this.setResizable(false);

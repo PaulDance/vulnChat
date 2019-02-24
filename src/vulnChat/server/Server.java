@@ -16,6 +16,7 @@ import java.util.HashMap;
  * current connections, chat messages, input, output, transmissions, etc... on a small white-on-black console.
  * @see Console
  * @see vulnChat.client.Client Client
+ * @see Settings
  * @author Paul Mabileau
  * @version 0.1
  */
@@ -24,9 +25,10 @@ public class Server {
 	private final HashMap<String, ClientEntry> clientsMap;
 	private final Console console;
 	private boolean isRunning = false;
+	private final Settings settings;
 	
 	public static void main(String[] args) throws IOException {
-		(new PortDialog("Configuration", "4321")).start();
+		(new ConfigDialog("Configuration", "4321")).start();
 	}
 	
 	/**
@@ -34,7 +36,7 @@ public class Server {
 	 * @throws IOException
 	 */
 	public Server() throws IOException {
-		this(4321);
+		this(4321, new Settings());
 	}
 	
 	/**
@@ -42,10 +44,11 @@ public class Server {
 	 * @param port - the network port the server will start listening on for chat messages.
 	 * @throws IOException
 	 */
-	public Server(int port) throws IOException {
+	public Server(int port, Settings settings) throws IOException {
 		this.connSocket = new ServerSocket(port);								// Start the server socket on <port>,
 		this.clientsMap = new HashMap<String, ClientEntry>();					// create an empty hash map to store connected clients,
 		this.console = new Console("Server console", 20, 90);					// and construct a server console.
+		this.settings = settings;
 	}
 	
 	/**
@@ -75,7 +78,7 @@ public class Server {
 				}
 				
 				try {
-					Server.this.stop();												// when done looping, close everything.
+					Server.this.stop();													// when done looping, close everything.
 				} catch (IOException e) {
 					e.printStackTrace(Server.this.getPrintStream());
 				}
@@ -95,6 +98,10 @@ public class Server {
 	 */
 	public final PrintStream getPrintStream() {
 		return this.console.printStream;
+	}
+	
+	public final Settings getSettings() {
+		return this.settings;
 	}
 	
 	/**

@@ -1,5 +1,7 @@
 package vulnChat.server;
 
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.DatagramSocket;
@@ -47,8 +49,24 @@ public class Server {
 	public Server(int port, Settings settings) throws IOException {
 		this.connSocket = new ServerSocket(port);								// Start the server socket on <port>,
 		this.clientsMap = new HashMap<String, ClientEntry>();					// create an empty hash map to store connected clients,
-		this.console = new Console("Server console", 20, 90);					// and construct a server console.
+		this.console = new Console("vulnChat Server Console", 20, 90);			// and construct a server console.
 		this.settings = settings;
+		
+		this.console.addWindowListener(new WindowListener() {
+			@Override public void windowClosing(WindowEvent e) {
+				try {
+					Server.this.stop();
+				} catch (IOException exc) {
+					exc.printStackTrace();
+				}
+			}
+			public void windowOpened(WindowEvent e) {}
+			public void windowIconified(WindowEvent e) {}
+			public void windowDeiconified(WindowEvent e) {}
+			public void windowDeactivated(WindowEvent e) {}
+			public void windowClosed(WindowEvent e) {}
+			public void windowActivated(WindowEvent e) {}
+		});
 	}
 	
 	/**
@@ -100,6 +118,9 @@ public class Server {
 		return this.console.printStream;
 	}
 	
+	/**
+	 * @return This server's {@link Settings} instance, which describes what vulnerabilities should be left or not.
+	 */
 	public final Settings getSettings() {
 		return this.settings;
 	}
@@ -119,5 +140,6 @@ public class Server {
 		this.isRunning = false;
 		this.console.stop();
 		this.connSocket.close();
+		this.clientsMap.clear();
 	}
 }

@@ -7,13 +7,14 @@ package vulnChat.server;
  * 
  * <ul>
  * 		<li>check if a new connection has a nickname already in the database</li>
- *		<li>check whether a client is communicating with its original IP address</li>
+ *		<li>check whether a client is communicating with its original IP address and port number</li>
  * </ul>
  * 
  * @author Paul Mabileau
  * @version 0.1
  */
 public class Settings {
-	public boolean	checkNewClientName 	=	false,
-					checkClientIP		=	false;
+	public boolean	checkNewClientName 		=	false,
+					checkClientIPAndPort	=	false,
+					kickOnHack				=	false;
 }

@@ -43,20 +43,21 @@ public class Console extends JFrame {
 	 * @param columns - The number of character columns for the window's text area format
 	 */
 	public Console(String title, int rows, int columns) {
-		super(title);														// Parent constructor initializes the frame titled <title>.
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);				// Sets the behavior of the window to kill itself when closed (when cross button clicked).
+		super(title);																// Parent constructor initializes the frame titled <title>.
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);						// Sets the behavior of the window to kill itself when closed (when cross button clicked).
 		
-		JTextArea printArea = new JTextArea(rows, columns);					// Print area settings with (<rows>, <columns>) format,
-		printArea.setBackground(Color.BLACK);								// black background color,
-		printArea.setForeground(Color.LIGHT_GRAY);							// light gray color,
-		printArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 17));		// monospaced 17pts font,
-		printArea.setCaretColor(Color.WHITE);								// white caret color,
-		printArea.setLineWrap(true);										// line wrapping activated: line breaks automatically added when the line is too long for the window,
-		printArea.setEditable(false);										// and is not editable: it is meant to be just a console, so no input.
+		JTextArea printArea = new JTextArea(rows, columns);							// Print area settings with (<rows>, <columns>) format,
+		printArea.setBackground(Color.BLACK);										// black background color,
+		printArea.setForeground(Color.LIGHT_GRAY);									// light gray color,
+		printArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 17));				// monospaced 17pts font,
+		printArea.setCaretColor(Color.WHITE);										// white caret color,
+		printArea.setLineWrap(true);												// line breaks automatically added when the line is too long for the window,
+		printArea.setEditable(false);												// and is not editable: it is meant to be just a console, so no input.
 		
-		this.printStream = new PrintStream(new OutputStream() {				// Creates and connects the console's print stream
-			@Override public void write(int b) throws IOException {			// to write every character it receives
-				printArea.append(String.valueOf((char) b));					// to the console's print area.
+		this.printStream = new PrintStream(new OutputStream() {						// Creates and connects the console's print stream
+			@Override public void write(int b) throws IOException {					// to write every character it receives
+				printArea.append(String.valueOf((char) b));							// to the console's print area
+				printArea.setCaretPosition(printArea.getDocument().getLength());	// and scrolling it down automatically.
 			}
 		});
 		

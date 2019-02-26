@@ -69,6 +69,7 @@ class InOutConsole extends JFrame {
 		this.inputStream = new PrintStream(new OutputStream() {				// Give this ability to the caller.
 			public void write(int b) throws IOException {
 				outArea.append(String.valueOf((char) b));
+				outArea.setCaretPosition(outArea.getDocument().getLength());
 			}
 		});
 		

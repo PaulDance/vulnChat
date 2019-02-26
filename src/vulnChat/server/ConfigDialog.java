@@ -79,21 +79,27 @@ public class ConfigDialog extends JFrame {
 		JCheckBox checkNewClientName = new JCheckBox("Refuse a new connection with an already existing nickname");
 		checkNewClientName.setSelected(serverSettings.checkNewClientName);
 		
-		JCheckBox checkClientIP = new JCheckBox("Check the client's IP address");
-		checkClientIP.setSelected(serverSettings.checkClientIP);
+		JCheckBox checkClientIPAndPort = new JCheckBox("Check the client's IP address and port number");
+		checkClientIPAndPort.setSelected(serverSettings.checkClientIPAndPort);
+		
+		JCheckBox kickOnHackCheck = new JCheckBox("Kick a connected client on hack attempt");
+		kickOnHackCheck.setSelected(serverSettings.kickOnHack);
 		
 		ItemListener checkListen = new ItemListener() {
 			@Override public void itemStateChanged(ItemEvent event) {
 				serverSettings.checkNewClientName = checkNewClientName.isSelected();
-				serverSettings.checkClientIP = checkClientIP.isSelected();
+				serverSettings.checkClientIPAndPort = checkClientIPAndPort.isSelected();
+				serverSettings.kickOnHack = kickOnHackCheck.isSelected();
 			}
 		};
 		
 		checkNewClientName.addItemListener(checkListen);
-		checkClientIP.addItemListener(checkListen);
+		checkClientIPAndPort.addItemListener(checkListen);
+		kickOnHackCheck.addItemListener(checkListen);
 		
 		checkBoxesPanel.add(checkNewClientName);
-		checkBoxesPanel.add(checkClientIP);
+		checkBoxesPanel.add(checkClientIPAndPort);
+		checkBoxesPanel.add(kickOnHackCheck);
 		mainPanel.add(checkBoxesPanel);
 		
 		this.add(mainPanel);													// Finally you connect the main panel which holds everything to the frame.

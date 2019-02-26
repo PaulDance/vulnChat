@@ -52,45 +52,61 @@ public class ClientWorker implements Runnable {
 		while (this.server.isRunning() && this.isRunning) {					// In a loop while authorized to,
 			try {
 				clientMsg = inFromConnect.readLine();						// wait for a message from the client;
-				this.server.getPrintStream().println(this.commSocket.getInetAddress() + ", " + this.commSocket.getPort() + ": " + clientMsg);
+				
+				if (clientMsg != null) {
+					this.server.getPrintStream().println(this.commSocket.getInetAddress() + ", " + this.commSocket.getPort() + ": " + clientMsg);
+				}
+				else {
+					this.server.getPrintStream().println("connection ended to: " + this.commSocket.getInetAddress());
+					this.kick(inFromConnect, outToConnect);
+					return;
+				}
 				
 				if (clientMsg.matches("[a-z]{3}\\s[\\p{Alnum}\\p{Punct}]{1,50}\\s?.{0,1000}")) {
 					String[] elements = clientMsg.split(" ", 3);			// if the received message is in the correct format (action, [chatterName, [message]]), then parse it:
+					ClientEntry clientEntry = this.server.getClientsMap().get(elements[1]);
 					
-					if (elements[0].equals("new")) {						// "new": adds a newly connected client to the database and enables communication to others,
-						if (!this.server.getClientsMap().containsKey(elements[1])) {
-							this.server.getClientsMap().put(elements[1],	new ClientEntry(this.commSocket.getInetAddress(),
-																			new BufferedReader(new InputStreamReader(this.commSocket.getInputStream())),
-																			new PrintWriter(this.commSocket.getOutputStream(), true)));
+					if (clientEntry == null || !this.server.getSettings().checkClientIPAndPort
+					|| (clientEntry.ip.equals(this.commSocket.getInetAddress()) && clientEntry.port == this.commSocket.getPort())) {
+						if (elements[0].equals("new")) {					// "new": adds a newly connected client to the database and enables communication to others,
+							if (!(clientEntry != null && this.server.getSettings().checkNewClientName)) {
+								this.server.getClientsMap().put(elements[1], new ClientEntry(this.commSocket.getInetAddress(),
+																				this.commSocket.getPort(),
+																				new BufferedReader(new InputStreamReader(this.commSocket.getInputStream())),
+																				new PrintWriter(this.commSocket.getOutputStream(), true)));
+								this.distributeMsg(clientMsg, elements[1]);
+								this.server.getPrintStream().println("ok new");
+							}
+							else {											// but if the client lied and the server does not permit it,
+								this.server.getPrintStream().println("not new");
+								this.kickIfOn(inFromConnect, outToConnect);	// kick him in the butt;
+							}
+						}
+						else if (elements[0].equals("bye")) {				// "bye": terminates the connection;
+							if (clientEntry != null) {
+								clientEntry.close();
+							}
+							this.server.getClientsMap().remove(elements[1]);
 							this.distributeMsg(clientMsg, elements[1]);
-							this.server.getPrintStream().println("ok new");
+							this.server.getPrintStream().println("ok bye");
 						}
-						else {												// but if the client lied,
-							this.server.getPrintStream().println("not new");
-							outToConnect.println("bye");					// kick him in the butt;
-							inFromConnect.close();
-							outToConnect.close();
-							this.commSocket.close();
-							this.isRunning = false;
+						else if (elements[0].equals("say")) {				// "say": sends a message on the server for all the clients to receive;
+							this.distributeMsg(clientMsg, elements[1]);
+							this.server.getPrintStream().println("ok say");
+						}
+						else {												// "$!?%$£": nothing interesting;
+							this.server.getPrintStream().println("not an operation");
+							this.kickIfOn(inFromConnect, outToConnect);
 						}
 					}
-					else if (elements[0].equals("bye")) {					// "bye": terminates the connection;
-						this.server.getClientsMap().get(elements[1]).in.close();
-						this.server.getClientsMap().get(elements[1]).out.close();
-						this.server.getClientsMap().remove(elements[1]);
-						this.distributeMsg(clientMsg, elements[1]);
-						this.server.getPrintStream().println("ok bye");
-					}
-					else if (elements[0].equals("say")) {					// "say": sends a message on the server for all the clients to receive;
-						this.distributeMsg(clientMsg, elements[1]);
-						this.server.getPrintStream().println("ok say");
-					}
-					else {													// "$!?%$£": nothing interesting;
-						this.server.getPrintStream().println("not an operation");
+					else {
+						this.server.getPrintStream().println("wrong IP or port");	// wrong IP or port number: ignore
+						this.kickIfOn(inFromConnect, outToConnect);			// and kick if activated by the server;
 					}
 				}
-				else {														// wrong format: ignore.
-					this.server.getPrintStream().println("not a msg");
+				else {
+					this.server.getPrintStream().println("not a msg");		// wrong format: ignore
+					this.kickIfOn(inFromConnect, outToConnect);				// and kick if activated by the server.
 				}
 			}
 			catch (IOException exc) {
@@ -104,8 +120,7 @@ public class ClientWorker implements Runnable {
 		}
 		
 		try {
-			inFromConnect.close();
-			outToConnect.close();
+			this.kick(inFromConnect, outToConnect);
 		} catch (IOException exc) {
 			exc.printStackTrace(this.server.getPrintStream());
 		}
@@ -117,12 +132,24 @@ public class ClientWorker implements Runnable {
 	 * @param sender - the chatter nickname as a {@link String} of the sending client
 	 */
 	private final void distributeMsg(String msg, String sender) {
-		for (String client: this.server.getClientsMap().keySet()) {					// For all the clients of the server,
-			if (!client.equals(sender)) {											// except the <sender>,
-				this.server.getClientsMap().get(client).out.println(msg);			// send them the <msg>
-				this.server.getPrintStream().println(msg + " --> " + client);		// and report that on the server's console.
+		for (String client: this.server.getClientsMap().keySet()) {				// For all the clients of the server,
+			if (!client.equals(sender)) {										// except the <sender>,
+				this.server.getClientsMap().get(client).out.println(msg);		// send them the <msg>
+				this.server.getPrintStream().println(msg + " --> " + client);	// and report that on the server's console.
 			}
 		}
+	}
+	
+	private final void kickIfOn(BufferedReader inFromConnect, PrintWriter outToConnect) throws IOException {
+		if (this.server.getSettings().kickOnHack) {
+			this.kick(inFromConnect, outToConnect);
+		}
+	}
+	
+	private final void kick(BufferedReader inFromConnect, PrintWriter outToConnect) throws IOException {
+		inFromConnect.close();
+		outToConnect.close();
+		this.finalize();
 	}
 	
 	protected final void finalize() throws IOException {

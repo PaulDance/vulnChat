@@ -4,20 +4,18 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import vulnChat.server.data.CheckBoxHolder;
 import vulnChat.server.data.Settings;
 import vulnChat.server.main.Server;
 
@@ -29,7 +27,7 @@ import vulnChat.server.main.Server;
  * @see JFrame
  * @see Server
  * @author Paul Mabileau
- * @version 0.1
+ * @version 0.2
 */
 public class ConfigDialog extends JFrame {
 	private static final long serialVersionUID = 226780886731769923L;
@@ -44,18 +42,18 @@ public class ConfigDialog extends JFrame {
 		super(title);
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);				// Kill this window only when closed with cross button.
 		
-		Settings serverSettings = new Settings();
-		JPanel mainPanel = new JPanel();										// A panel is a way to structure the widgets with a logical tree formation,
+		final Settings serverSettings = new Settings();
+		final JPanel mainPanel = new JPanel();									// A panel is a way to structure the widgets with a logical tree formation,
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 		
-		JPanel portPanel = new JPanel();										// so you create a panel,
-		JTextField portField = new JTextField(defaultPort, 6);
-		portPanel.add(new JLabel("Server Port", SwingConstants.LEFT));			// add widgets to it
+		final JPanel portPanel = new JPanel();									// so you create a panel,
+		final JTextField portField = new JTextField(defaultPort, 6);
+		portPanel.add(new JLabel("Server Port", SwingConstants.CENTER));			// add widgets to it
 		portPanel.add(portField);
 		mainPanel.add(portPanel);												// and then add it to the main panel.
 		
-		JPanel buttonsPanel = new JPanel();										// Same for buttons.
-		JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");
+		final JPanel buttonsPanel = new JPanel();								// Same for buttons.
+		final JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");
 		okButton.setActionCommand("ok");
 		cancelButton.setActionCommand("cancel");
 		
@@ -80,34 +78,36 @@ public class ConfigDialog extends JFrame {
 		buttonsPanel.add(cancelButton);
 		mainPanel.add(buttonsPanel);
 		
-		JPanel checkBoxesPanel = new JPanel();
-		checkBoxesPanel.setLayout(new BoxLayout(checkBoxesPanel, BoxLayout.PAGE_AXIS));
-		JCheckBox checkNewClientName = new JCheckBox("Refuse a new connection with an already existing nickname");
-		checkNewClientName.setSelected(serverSettings.checkNewClientName);
+		final CheckBoxHolder checksHolder = new CheckBoxHolder();				// The holder easily creating and storing the associated JCheckBox instances.
+		checksHolder.setLayout(new BoxLayout(checksHolder, BoxLayout.PAGE_AXIS));
+		checksHolder.addNew("Refuse a new connection with an already existing nickname", serverSettings.checkNewClientName);
+		checksHolder.addNew("Check the client's IP address and port number", serverSettings.checkClientIPAndPort);
+		checksHolder.addNew("Kick a connected client on hack attempt", serverSettings.kickOnHack);
+		checksHolder.createItemListener();
+		mainPanel.add(checksHolder);
 		
-		JCheckBox checkClientIPAndPort = new JCheckBox("Check the client's IP address and port number");
-		checkClientIPAndPort.setSelected(serverSettings.checkClientIPAndPort);
+		final JPanel selectionButtonsPanel = new JPanel();						// Select all and deselect all buttons.
+		final JButton selectAllButton = new JButton("Select all"), deselectAllButton = new JButton("Deselect all");
+		selectAllButton.setActionCommand("selAll");
+		deselectAllButton.setActionCommand("deselAll");
 		
-		JCheckBox kickOnHackCheck = new JCheckBox("Kick a connected client on hack attempt");
-		kickOnHackCheck.setSelected(serverSettings.kickOnHack);
-		
-		ItemListener checkListen = new ItemListener() {
-			@Override public void itemStateChanged(ItemEvent event) {
-				serverSettings.checkNewClientName = checkNewClientName.isSelected();
-				serverSettings.checkClientIPAndPort = checkClientIPAndPort.isSelected();
-				serverSettings.kickOnHack = kickOnHackCheck.isSelected();
+		final ActionListener selectButtonsListener = new ActionListener() {
+			@Override public void actionPerformed(ActionEvent event) {
+				if (event.getActionCommand().equals("selAll")) {
+					checksHolder.selectAll();
+				}
+				else if (event.getActionCommand().equals("deselAll")) {
+					checksHolder.deselectAll();
+				}
 			}
 		};
 		
-		checkNewClientName.addItemListener(checkListen);
-		checkClientIPAndPort.addItemListener(checkListen);
-		kickOnHackCheck.addItemListener(checkListen);
+		selectAllButton.addActionListener(selectButtonsListener);
+		deselectAllButton.addActionListener(selectButtonsListener);
+		selectionButtonsPanel.add(selectAllButton);
+		selectionButtonsPanel.add(deselectAllButton);
 		
-		checkBoxesPanel.add(checkNewClientName);
-		checkBoxesPanel.add(checkClientIPAndPort);
-		checkBoxesPanel.add(kickOnHackCheck);
-		mainPanel.add(checkBoxesPanel);
-		
+		mainPanel.add(selectionButtonsPanel);
 		this.add(mainPanel);													// Finally you connect the main panel which holds everything to the frame.
 		this.setResizable(false);
 	}

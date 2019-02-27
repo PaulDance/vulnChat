@@ -68,10 +68,10 @@ public class ClientWorker implements Runnable {
 					String[] elements = clientMsg.split(" ", 3);			// if the received message is in the correct format (action, [chatterName, [message]]), then parse it:
 					ClientEntry clientEntry = this.server.getClientsMap().get(elements[1]);
 					
-					if (clientEntry == null || !this.server.getSettings().checkClientIPAndPort
+					if (clientEntry == null || !this.server.getSettings().checkClientIPAndPort.getValue()
 					|| (clientEntry.ip.equals(this.commSocket.getInetAddress()) && clientEntry.port == this.commSocket.getPort())) {
 						if (elements[0].equals("new")) {					// "new": adds a newly connected client to the database and enables communication to others,
-							if (!(clientEntry != null && this.server.getSettings().checkNewClientName)) {
+							if (!(clientEntry != null && this.server.getSettings().checkNewClientName.getValue())) {
 								this.server.getClientsMap().put(elements[1], new ClientEntry(this.commSocket.getInetAddress(),
 																				this.commSocket.getPort(),
 																				new BufferedReader(new InputStreamReader(this.commSocket.getInputStream())),
@@ -143,7 +143,7 @@ public class ClientWorker implements Runnable {
 	}
 	
 	private final void kickIfOn(BufferedReader inFromConnect, PrintWriter outToConnect) throws IOException {
-		if (this.server.getSettings().kickOnHack) {
+		if (this.server.getSettings().kickOnHack.getValue()) {
 			this.kick(inFromConnect, outToConnect);
 		}
 	}

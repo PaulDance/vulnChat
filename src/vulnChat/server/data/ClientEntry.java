@@ -1,4 +1,4 @@
-package vulnChat.server;
+package vulnChat.server.data;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,9 +1,11 @@
-package vulnChat.client;
+package vulnChat.client.data;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+
+import vulnChat.client.display.InOutConsole;
 
 
 /**

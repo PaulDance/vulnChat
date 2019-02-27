@@ -1,4 +1,4 @@
-package vulnChat.client;
+package vulnChat.client.display;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,6 +11,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
+import vulnChat.client.main.Client;
+import vulnChat.client.main.ServerWorker;
 
 
 /**

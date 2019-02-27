@@ -1,4 +1,4 @@
-package vulnChat.client;
+package vulnChat.client.display;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -14,6 +14,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 
+import vulnChat.client.data.LineOutputStream;
+
 
 /**
  * This class, extending {@link JFrame}, defines all the necessary things for a basic but
@@ -27,7 +29,7 @@ import javax.swing.JTextArea;
  * @author Paul Mabileau
  * @version 0.1
  */
-class InOutConsole extends JFrame {
+public class InOutConsole extends JFrame {
 	private static final long serialVersionUID = -8174803948016946910L;
 	public final PrintStream inputStream;
 	protected final PrintStream outputStream;

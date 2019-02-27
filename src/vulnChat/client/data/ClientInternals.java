@@ -1,4 +1,4 @@
-package vulnChat.client;
+package vulnChat.client.data;
 
 import java.io.BufferedReader;
 import java.io.PrintStream;

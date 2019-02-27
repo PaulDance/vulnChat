@@ -1,4 +1,4 @@
-package vulnChat.server;
+package vulnChat.server.main;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -11,13 +11,18 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import vulnChat.server.data.ClientEntry;
+import vulnChat.server.data.Settings;
+import vulnChat.server.display.ConfigDialog;
+import vulnChat.server.display.Console;
+
 
 /**
  * This class starts and manages a vulnerable chat messaging server. It starts by opening a configuration
  * dialog to ask the user for the port to start listening on. Then, it will display information about the
  * current connections, chat messages, input, output, transmissions, etc... on a small white-on-black console.
  * @see Console
- * @see vulnChat.client.Client Client
+ * @see vulnChat.client.main.Client Client
  * @see Settings
  * @author Paul Mabileau
  * @version 0.1

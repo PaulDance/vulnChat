@@ -1,10 +1,14 @@
-package vulnChat.client;
+package vulnChat.client.main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+
+import vulnChat.client.data.ClientInternals;
+import vulnChat.client.display.ChatWindow;
+import vulnChat.client.display.ConfigDialog;
 
 
 /**
@@ -60,7 +64,7 @@ public class Client {
 	 * @param port - the port number of the server
 	 * @throws IOException
 	 */
-	protected final void connectTo(String ipAddr, int port) throws IOException {
+	public final void connectTo(String ipAddr, int port) throws IOException {
 		this.internals.setClientSocket(new Socket(ipAddr, port));
 		this.internals.getClientSocket().setKeepAlive(true);
 		this.internals.setFromServerReader(new BufferedReader(new InputStreamReader(this.internals.getClientSocket().getInputStream())));
@@ -68,7 +72,7 @@ public class Client {
 		this.internals.getToServerWriter().println("new " + this.chatterName);
 	}
 	
-	protected final void startChatWindow() {
+	public final void startChatWindow() {
 		this.chatWindow.start();
 	}
 	
@@ -83,7 +87,7 @@ public class Client {
 	 * Sets isRunning
 	 * @param state - the new state of isRunning
 	 */
-	protected final void setRunning(boolean state) {
+	public final void setRunning(boolean state) {
 		this.isRunning = state;
 	}
 	
@@ -91,7 +95,7 @@ public class Client {
 	 * Closes the client and releases any system resources associated with it.
 	 * @throws IOException
 	 */
-	protected final void stop() throws IOException {
+	public final void stop() throws IOException {
 		this.internals.getToServerWriter().flush();
 		this.internals.getToServerWriter().close();
 		this.internals.getFromServerReader().close();
@@ -101,7 +105,7 @@ public class Client {
 	/**
 	 * @return The {@link ClientInternals} object of this client
 	 */
-	protected final ClientInternals getInternals() {
+	public final ClientInternals getInternals() {
 		return this.internals;
 	}
 	
@@ -109,14 +113,14 @@ public class Client {
 	 * Sets the client's chatter name to a new value.
 	 * @param chatterName - the said new value
 	 */
-	protected void setChatterName(String chatterName) {
+	public void setChatterName(String chatterName) {
 		this.chatterName = chatterName;
 	}
 	
 	/**
 	 * @return The client's chatter name as a {@link String}.
 	 */
-	protected String getChatterName() {
+	public String getChatterName() {
 		return this.chatterName;
 	}
 }

@@ -1,9 +1,12 @@
-package vulnChat.client;
+package vulnChat.client.display;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.PrintStream;
+
+import vulnChat.client.data.LineOutputStream;
+import vulnChat.client.main.Client;
 
 
 /**

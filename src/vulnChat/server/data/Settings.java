@@ -1,4 +1,4 @@
-package vulnChat.server;
+package vulnChat.server.data;
 
 
 /**

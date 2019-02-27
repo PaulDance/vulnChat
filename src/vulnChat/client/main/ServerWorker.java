@@ -1,4 +1,4 @@
-package vulnChat.client;
+package vulnChat.client.main;
 
 import java.io.IOException;
 

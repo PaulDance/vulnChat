@@ -64,7 +64,7 @@ public class Console extends JFrame {
 		// Adds a scroll bar to the right of the text area that activates only when text is overflowing.
 		JScrollPane scrollPane = new JScrollPane(printArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		this.add(scrollPane, BorderLayout.CENTER);
-		this.setResizable(false);
+		this.setResizable(true);
 	}
 	
 	/**

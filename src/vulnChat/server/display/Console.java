@@ -2,10 +2,13 @@ package vulnChat.server.display;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -71,7 +74,12 @@ public class Console extends JFrame {
 	 * Builds the frame graphics and shows the window to the foreground.
 	 */
 	public void start() {
+		final Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
+		final ThreadLocalRandom randThread = ThreadLocalRandom.current();
+		
 		this.pack();
+		//this.setLocationRelativeTo(null);
+		this.setLocation(randThread.nextInt(0, screenDim.width - this.getSize().width), randThread.nextInt(0, screenDim.height - this.getSize().height));
 		this.setVisible(true);
 		this.requestFocus();
 	}

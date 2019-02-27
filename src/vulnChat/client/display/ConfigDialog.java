@@ -1,9 +1,12 @@
 package vulnChat.client.display;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -104,8 +107,12 @@ public class ConfigDialog extends JFrame {
 	 * Computes the graphics for the console window, starts it and makes it visible to the user.
 	 */
 	public void start() {
+		final Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
+		final ThreadLocalRandom randThread = ThreadLocalRandom.current();
+		
 		this.pack();
 		this.setVisible(true);
+		this.setLocation(randThread.nextInt(0, screenDim.width - this.getSize().width), randThread.nextInt(0, screenDim.height - this.getSize().height));
 		this.requestFocus();
 	}
 	

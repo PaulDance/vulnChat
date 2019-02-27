@@ -1,10 +1,13 @@
 package vulnChat.server.display;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -113,8 +116,12 @@ public class ConfigDialog extends JFrame {
 	 * Builds the frame graphics and shows the window to the foreground.
 	 */
 	public void start() {
+		final Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
+		final ThreadLocalRandom randThread = ThreadLocalRandom.current();
+		
 		this.pack();
 		this.setVisible(true);
+		this.setLocation(randThread.nextInt(0, screenDim.width - this.getSize().width), randThread.nextInt(0, screenDim.height - this.getSize().height));
 		this.requestFocus();
 	}
 	

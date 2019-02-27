@@ -1,12 +1,15 @@
 package vulnChat.client.display;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -127,8 +130,12 @@ public class InOutConsole extends JFrame {
 	 * add the following instructions at the beginning of the definition: {@code super.start();}
 	 */
 	public void start() {
+		final Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
+		final ThreadLocalRandom randThread = ThreadLocalRandom.current();
+		
 		this.pack();
 		this.setVisible(true);
+		this.setLocation(randThread.nextInt(0, screenDim.width - this.getSize().width), randThread.nextInt(0, screenDim.height - this.getSize().height));
 		this.requestFocus();
 	}
 	

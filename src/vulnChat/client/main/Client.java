@@ -72,7 +72,12 @@ public class Client {
 		this.internals.getToServerWriter().println("new " + this.chatterName);
 	}
 	
+	/**
+	 * Opens up and starts the main window of the client: the chat window.
+	 * @see Client
+	 */
 	public final void startChatWindow() {
+		this.chatWindow.setTitle(this.chatWindow.getTitle() + ": " + this.chatterName);
 		this.chatWindow.start();
 	}
 	

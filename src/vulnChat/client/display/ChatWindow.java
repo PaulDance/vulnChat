@@ -33,6 +33,7 @@ public class ChatWindow extends InOutConsole {
 		}));
 		
 		client.getInternals().setPrintStream(this.inputStream);					// give to the client object the stream to this window;
+		this.setCharLimit(1000);
 		
 		this.addWindowListener(new WindowListener() {							// also, there is communication needed upon closing the window:
 			public void windowClosing(WindowEvent event) {						// send to the server an end connection message.

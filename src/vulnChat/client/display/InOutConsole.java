@@ -1,6 +1,5 @@
 package vulnChat.client.display;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -9,7 +8,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -32,7 +33,8 @@ import vulnChat.client.data.LineOutputStream;
 public class InOutConsole extends JFrame {
 	private static final long serialVersionUID = -8174803948016946910L;
 	public final PrintStream inputStream;
-	protected final PrintStream outputStream;
+	private final PrintStream outputStream;
+	private int charLimit = 0;
 	
 	/**
 	 * Default constructor for this class. It uses the two arguments to create the window, but does not start it yet.
@@ -60,6 +62,9 @@ public class InOutConsole extends JFrame {
 		this.outputStream = outputStream;
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
+		final JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+		
 		final JTextArea outArea = new JTextArea(24, 80);					// Output text area where text can be printed.
 		outArea.setBackground(Color.BLACK);
 		outArea.setForeground(Color.LIGHT_GRAY);
@@ -75,9 +80,7 @@ public class InOutConsole extends JFrame {
 			}
 		});
 		
-		this.add(outArea, BorderLayout.CENTER);
-		
-		final JTextArea inArea = new JTextArea(5, 80);						// The text area in which the user can write and send text.
+		final JTextArea inArea = new JTextArea("", 5, 80);					// The text area in which the user can write and send text.
 		inArea.setBackground(Color.BLACK);
 		inArea.setForeground(Color.LIGHT_GRAY);
 		inArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
@@ -85,13 +88,17 @@ public class InOutConsole extends JFrame {
 		inArea.setLineWrap(true);
 		inArea.setAutoscrolls(true);
 		
-		inArea.addKeyListener(new KeyListener() {							// Detect the user's key strikes in order to
+		inArea.addKeyListener(new KeyListener() {							// Detect the user's key strikes in order to manage the keyboard inputs:
 			public void keyTyped(KeyEvent event) {
-				if (event.getKeyChar() == '\n') {
-					String text = inArea.getText();
-					
+				final String text = inArea.getText();
+				
+				if (text.length() > InOutConsole.this.charLimit) {
+					event.setKeyChar('\00');								// if limit is reached, change the char to null, so that it does not display after this method returns;
+				}
+				
+				if (event.getKeyChar() == '\n') {						// if return is pressed,
 					if (!text.equals("\n")) {
-						InOutConsole.this.outputStream.println(text);		// write to the output when the enter key is pressed.
+						InOutConsole.this.outputStream.println(text);	// write to the output.
 					}
 					
 					inArea.setText("");
@@ -101,15 +108,18 @@ public class InOutConsole extends JFrame {
 			public void keyReleased(KeyEvent e) {}
 		});
 		
-		this.add(inArea, BorderLayout.SOUTH);
 		
-		JScrollPane outScrollPane = new JScrollPane(outArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		JScrollPane inScrollPane = new JScrollPane(inArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		final JScrollPane outScrollPane = new JScrollPane(outArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		final JScrollPane inScrollPane = new JScrollPane(inArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, outScrollPane, inScrollPane);
-		splitPane.setEnabled(false);
-		this.add(splitPane);
+		splitPane.setEnabled(true);
+		splitPane.setResizeWeight(1);
+		mainPanel.add(splitPane);
+		
+		this.add(mainPanel);
 	}
+	
 	
 	/**
 	 * Computes the graphics for the console window, starts it and makes it visible to the user.
@@ -130,5 +140,11 @@ public class InOutConsole extends JFrame {
 		this.inputStream.close();
 		this.outputStream.close();
 		this.dispose();
+	}
+	
+	public void setCharLimit(int limit) {
+		if (limit > 0) {
+			this.charLimit = limit;
+		}
 	}
 }

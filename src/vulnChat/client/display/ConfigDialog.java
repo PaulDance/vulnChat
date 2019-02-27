@@ -3,6 +3,7 @@ package vulnChat.client.display;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.ConnectException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -74,12 +75,18 @@ public class ConfigDialog extends JFrame {
 							(new Thread(new ServerWorker(client))).start();
 							client.startChatWindow();
 							client.getInternals().getPrintStream().println(nickname + " joined the channel.");
+							ConfigDialog.this.stop();
+						} catch (ConnectException exc) {					// Check if server is available.
+							client.setRunning(false);
 						} catch (NumberFormatException | IOException e) {
 							e.printStackTrace();
+							ConfigDialog.this.stop();
 						}
 					}
 				}
-				ConfigDialog.this.dispose();
+				else {
+					ConfigDialog.this.stop();
+				}
 			}
 		};
 		

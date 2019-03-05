@@ -2,6 +2,8 @@ package vulnChat.server.data;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 
@@ -24,8 +26,10 @@ import java.net.InetAddress;
 public class ClientEntry {
 	public final InetAddress ip;
 	public final int port;
-	public final BufferedReader in;
-	public final PrintWriter out;
+//	public final BufferedReader in;
+//	public final PrintWriter out;
+	public final ObjectInputStream in;
+	public final ObjectOutputStream out;
 	
 	/**
 	 * Builds the entry tuple describing the client.
@@ -33,7 +37,14 @@ public class ClientEntry {
 	 * @param in - the {@link BufferedReader} connected to and receiving from the client
 	 * @param out - the {@link PrintWriter} connected and sending to the client
 	 */
-	public ClientEntry(InetAddress ip, int port, BufferedReader in, PrintWriter out) {
+//	public ClientEntry(InetAddress ip, int port, BufferedReader in, PrintWriter out) {
+//		this.ip = ip;
+//		this.port = port;
+//		this.in = in;
+//		this.out = out;
+//	}
+	
+	public ClientEntry(InetAddress ip, int port, ObjectInputStream in, ObjectOutputStream out) {
 		this.ip = ip;
 		this.port = port;
 		this.in = in;

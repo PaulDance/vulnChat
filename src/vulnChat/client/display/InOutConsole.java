@@ -19,6 +19,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 
 import vulnChat.client.data.LineOutputStream;
+import vulnChat.data.LinePrinter;
 
 
 /**
@@ -35,8 +36,10 @@ import vulnChat.client.data.LineOutputStream;
  */
 public class InOutConsole extends JFrame {
 	private static final long serialVersionUID = -8174803948016946910L;
-	public final PrintStream inputStream;
-	private final PrintStream outputStream;
+	//public final PrintWriter inputWriter;
+	public final LinePrinter inputWriter;
+	//private final PrintWriter outputWriter;
+	private final LinePrinter outputWriter;
 	private int charLimit = 0;
 	
 	/**
@@ -56,13 +59,14 @@ public class InOutConsole extends JFrame {
 	 * key strikes, but one should know that the information is sent by the console on the given stream when the user
 	 * presses the enter key, that is to say line by line.
 	 * @param title - the title as a {@link String} that will be given to the {@link JFrame}
-	 * @param outputStream - the {@link PrintStream} object the console should be able to use as an output
+	 * @param outputWriter - the {@link PrintStream} object the console should be able to use as an output
+	 * @throws IOException 
 	 * @see InOutConsole
 	 * @see LineOutputStream
 	 */
-	public InOutConsole(String title, PrintStream outputStream) {
+	public InOutConsole(String title, LinePrinter outputWriter) throws IOException {
 		super(title);
-		this.outputStream = outputStream;
+		this.outputWriter = outputWriter;
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		final JPanel mainPanel = new JPanel();
@@ -76,14 +80,25 @@ public class InOutConsole extends JFrame {
 		outArea.setLineWrap(true);
 		outArea.setEditable(false);
 		
-		this.inputStream = new PrintStream(new OutputStream() {				// Give this ability to the caller.
-			public void write(int b) throws IOException {
-				outArea.append(String.valueOf((char) b));
+//		this.inputWriter = new PrintWriter(new OutputStreamWriter(new LineOutputStream() {
+//			@Override public void write(String line) throws IOException {
+//				outArea.append(line + "\n");
+//				outArea.setCaretPosition(outArea.getDocument().getLength());
+//			}
+//		}, "UTF8"), true);
+		
+		this.inputWriter = new LinePrinter() {
+			@Override public void println(String line) {
+				this.print(line + "\n");
+			}
+			
+			@Override public void print(String line) {
+				outArea.append(line);
 				outArea.setCaretPosition(outArea.getDocument().getLength());
 			}
-		});
+		};
 		
-		final JTextArea inArea = new JTextArea("", 5, 80);					// The text area in which the user can write and send text.
+		final JTextArea inArea = new JTextArea(5, 80);					// The text area in which the user can write and send text.
 		inArea.setBackground(Color.BLACK);
 		inArea.setForeground(Color.LIGHT_GRAY);
 		inArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
@@ -93,7 +108,7 @@ public class InOutConsole extends JFrame {
 		
 		inArea.addKeyListener(new KeyListener() {							// Detect the user's key strikes in order to manage the keyboard inputs:
 			public void keyTyped(KeyEvent event) {
-				final String text = inArea.getText();
+				final String text = inArea.getText().trim();
 				
 				if (text.length() > InOutConsole.this.charLimit) {
 					event.setKeyChar('\00');								// if limit is reached, change the char to null, so that it does not display after this method returns;
@@ -101,7 +116,7 @@ public class InOutConsole extends JFrame {
 				
 				if (event.getKeyChar() == '\n') {						// if return is pressed,
 					if (!text.equals("\n")) {
-						InOutConsole.this.outputStream.println(text);	// write to the output.
+						InOutConsole.this.outputWriter.println(text);
 					}
 					
 					inArea.setText("");
@@ -144,8 +159,8 @@ public class InOutConsole extends JFrame {
 	 * @throws IOException
 	 */
 	public void stop() throws IOException {
-		this.inputStream.close();
-		this.outputStream.close();
+		//this.inputWriter.close();
+		//this.outputWriter.close();
 		this.dispose();
 	}
 	

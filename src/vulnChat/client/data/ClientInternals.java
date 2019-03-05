@@ -1,10 +1,11 @@
 package vulnChat.client.data;
 
-import java.io.BufferedReader;
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+
+import vulnChat.data.LinePrinter;
 
 /**
  * Dummy class simulating a tuple holding the necessary information for a client object to communicate with a chat server
@@ -14,9 +15,10 @@ import java.net.SocketException;
  */
 public class ClientInternals {
 	private Socket clientSocket;
-	private BufferedReader fromServerReader;
-	private PrintWriter toServerWriter;
-	private PrintStream printStream;
+	private ObjectInputStream fromServerStream;
+	private ObjectOutputStream toServerStream;
+	//private PrintWriter printStream;
+	private LinePrinter printStream;
 	
 	public ClientInternals() {
 		
@@ -30,27 +32,35 @@ public class ClientInternals {
 		this.clientSocket = clientSocket;
 	}
 	
-	public final BufferedReader getFromServerReader() {
-		return this.fromServerReader;
+	public final ObjectInputStream getFromServerStream() {
+		return this.fromServerStream;
 	}
 	
-	public final void setFromServerReader(BufferedReader fromServerReader) {
-		this.fromServerReader = fromServerReader;
+	public final void setFromServerStream(ObjectInputStream fromServerStream) {
+		this.fromServerStream = fromServerStream;
 	}
 	
-	public final PrintWriter getToServerWriter() {
-		return this.toServerWriter;
+	public final ObjectOutputStream getToServerStream() {
+		return this.toServerStream;
 	}
 	
-	public final void setToServerWriter(PrintWriter toServerWriter) {
-		this.toServerWriter = toServerWriter;
+	public final void setToServerStream(ObjectOutputStream toServerStream) {
+		this.toServerStream = toServerStream;
 	}
 	
-	public final PrintStream getPrintStream() {
+//	public final PrintWriter getPrintStream() {
+//		return this.printStream;
+//	}
+//	
+//	public final void setPrintStream(PrintWriter printStream) {
+//		this.printStream = printStream;
+//	}
+	
+	public LinePrinter getPrintStream() {
 		return this.printStream;
 	}
 	
-	public final void setPrintStream(PrintStream printStream) {
+	public final void setPrintStream(LinePrinter printStream) {
 		this.printStream = printStream;
 	}
 }

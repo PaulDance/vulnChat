@@ -5,14 +5,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import vulnChat.data.LinePrinter;
 
 
 /**
@@ -30,12 +31,14 @@ public class Console extends JFrame {
 	 * The print stream attached to the window frame's text area. Printing to it will result in printing to the text area.
 	 * @see PrintStream
 	 */
-	public final PrintStream printStream;
+	//public final PrintWriter printStream;
+	public final LinePrinter printStream;
 	
 	/**
 	 * Initializes a Console object with "Console" as a title, 20 rows and 90 columns.
+	 * @throws UnsupportedEncodingException 
 	 */
-	public Console() {
+	public Console() throws UnsupportedEncodingException {
 		this("Console", 20, 90);
 	}
 	
@@ -44,8 +47,9 @@ public class Console extends JFrame {
 	 * @param title - The window title
 	 * @param rows - The number of character rows for the window's text area format
 	 * @param columns - The number of character columns for the window's text area format
+	 * @throws UnsupportedEncodingException 
 	 */
-	public Console(String title, int rows, int columns) {
+	public Console(String title, int rows, int columns) throws UnsupportedEncodingException {
 		super(title);																// Parent constructor initializes the frame titled <title>.
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);						// Sets the behavior of the window to kill itself when closed (when cross button clicked).
 		
@@ -57,12 +61,22 @@ public class Console extends JFrame {
 		printArea.setLineWrap(true);												// line breaks automatically added when the line is too long for the window,
 		printArea.setEditable(false);												// and is not editable: it is meant to be just a console, so no input.
 		
-		this.printStream = new PrintStream(new OutputStream() {						// Creates and connects the console's print stream
-			@Override public void write(int b) throws IOException {					// to write every character it receives
-				printArea.append(String.valueOf((char) b));							// to the console's print area
-				printArea.setCaretPosition(printArea.getDocument().getLength());	// and scrolling it down automatically.
+//		this.printStream = new PrintWriter(new OutputStreamWriter(new OutputStream() {						// Creates and connects the console's print stream
+//			@Override public void write(int b) throws IOException {					// to write every character it receives
+//				printArea.append(String.valueOf((char) b));							// to the console's print area
+//				printArea.setCaretPosition(printArea.getDocument().getLength());	// and scrolling it down automatically.
+//			}
+//		}, "UTF8"), true);
+		this.printStream = new LinePrinter() {
+			@Override public void println(String text) {
+				this.print(text + "\n");
 			}
-		});
+			
+			@Override public void print(String text) {
+				printArea.append(text);
+				printArea.setCaretPosition(printArea.getDocument().getLength());
+			}
+		};
 		
 		// Adds a scroll bar to the right of the text area that activates only when text is overflowing.
 		JScrollPane scrollPane = new JScrollPane(printArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -88,7 +102,7 @@ public class Console extends JFrame {
 	 * Stops the console and frees resources associated with it.
 	 */
 	public void stop() {
-		this.printStream.close();
+		//this.printStream.close();
 		this.dispose();
 	}
 }

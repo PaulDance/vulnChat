@@ -3,10 +3,9 @@ package vulnChat.client.display;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
-import java.io.PrintStream;
 
-import vulnChat.client.data.LineOutputStream;
 import vulnChat.client.main.Client;
+import vulnChat.data.LinePrinter;
 
 
 /**
@@ -23,22 +22,34 @@ public class ChatWindow extends InOutConsole {
 	 * associating to this object a {@link Client} object for the specific use meant by vulnChat.
 	 * @param client - the calling {@link Client} instance
 	 * @param title - the window's title as a {@link String}.
+	 * @throws IOException 
 	 */
-	public ChatWindow(Client client, String title) {
-		super(title, new PrintStream(new LineOutputStream () {					// Behavior specific to a chat window:
-			@Override public void write(String line) throws IOException {		// when receiving a line of text from the user, display it and send it;
-				client.getInternals().getPrintStream().println(client.getChatterName() + ": " + line);
-				client.getInternals().getToServerWriter().println("say " + client.getChatterName() + " " + line);
+	public ChatWindow(Client client, String title) throws IOException {
+		super(title, new LinePrinter() {					// Behavior specific to a chat window:
+			@Override public void println(String line) {
+				this.print(line);
 			}
-		}));
+			
+			@Override public void print(String line) {		// when receiving a line of text from the user, display it and send it;
+				System.out.println(line);
+				client.getInternals().getPrintStream().println(client.getChatterName() + ": " + line);
+				try {
+					client.getInternals().getToServerStream().writeUTF("say " + client.getChatterName() + " " + line);
+					client.getInternals().getToServerStream().flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 		
-		client.getInternals().setPrintStream(this.inputStream);					// give to the client object the stream to this window;
+		client.getInternals().setPrintStream(this.inputWriter);					// give to the client object the stream to this window;
 		this.setCharLimit(1000);
 		
 		this.addWindowListener(new WindowListener() {							// also, there is communication needed upon closing the window:
 			public void windowClosing(WindowEvent event) {						// send to the server an end connection message.
-				client.getInternals().getToServerWriter().println("bye " + client.getChatterName());
 				try {
+					client.getInternals().getToServerStream().writeUTF("bye " + client.getChatterName());
+					client.getInternals().getToServerStream().flush();
 					client.stop();
 					ChatWindow.this.stop();
 				} catch (IOException e) {

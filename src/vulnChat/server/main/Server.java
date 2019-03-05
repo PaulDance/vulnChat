@@ -7,10 +7,9 @@ import java.io.PrintStream;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import vulnChat.data.LinePrinter;
 import vulnChat.server.data.ClientEntry;
 import vulnChat.server.data.Settings;
 import vulnChat.server.display.ConfigDialog;
@@ -87,23 +86,26 @@ public class Server {
 				try (final DatagramSocket probeSocket = new DatagramSocket()) {
 					  probeSocket.connect(InetAddress.getByName("8.8.8.8"), 10002);		// Trick to get the IP address the computer actually has on the network.
 					  Server.this.console.printStream.println("Server started on " + probeSocket.getLocalAddress().getHostAddress() + " port " + Server.this.connSocket.getLocalPort());
-				} catch (UnknownHostException | SocketException e) {
-					e.printStackTrace(Server.this.getPrintStream());
+				} catch (IOException e) {
+					//e.printStackTrace(Server.this.getPrintStream());
+					e.printStackTrace();
 				}
 				
 				while (Server.this.console.isEnabled() && Server.this.isRunning) {		// Loop while authorized to
 					try {																// wait and receive the connection of a new client;
 						(new Thread(new ClientWorker(Server.this, Server.this.connSocket.accept()))).start();
 					}
-					catch (IOException exc) {
-						exc.printStackTrace(Server.this.console.printStream);
+					catch (IOException e) {
+						//e.printStackTrace(Server.this.console.printStream);
+						e.printStackTrace();
 					}
 				}
 				
 				try {
 					Server.this.stop();													// when done looping, close everything.
 				} catch (IOException e) {
-					e.printStackTrace(Server.this.getPrintStream());
+					//e.printStackTrace(Server.this.getPrintStream());
+					e.printStackTrace();
 				}
 			}
 		})).start();
@@ -119,7 +121,11 @@ public class Server {
 	/**
 	 * @return The {@link PrintStream} that enables one to print to the server's console.
 	 */
-	public final PrintStream getPrintStream() {
+//	public final PrintWriter getPrintStream() {
+//		return this.console.printStream;
+//	}
+	
+	public final LinePrinter getPrintStream() {
 		return this.console.printStream;
 	}
 	

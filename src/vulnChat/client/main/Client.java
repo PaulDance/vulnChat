@@ -1,9 +1,8 @@
 package vulnChat.client.main;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import vulnChat.client.data.ClientInternals;
@@ -67,9 +66,10 @@ public class Client {
 	public final void connectTo(String ipAddr, int port) throws IOException {
 		this.internals.setClientSocket(new Socket(ipAddr, port));
 		this.internals.getClientSocket().setKeepAlive(true);
-		this.internals.setFromServerReader(new BufferedReader(new InputStreamReader(this.internals.getClientSocket().getInputStream())));
-		this.internals.setToServerWriter(new PrintWriter(this.internals.getClientSocket().getOutputStream(), true));
-		this.internals.getToServerWriter().println("new " + this.chatterName);
+		this.internals.setToServerStream(new ObjectOutputStream(this.internals.getClientSocket().getOutputStream()));
+		this.internals.setFromServerStream(new ObjectInputStream(this.internals.getClientSocket().getInputStream()));
+		this.internals.getToServerStream().writeUTF("new " + this.chatterName);
+		this.internals.getToServerStream().flush();
 	}
 	
 	/**
@@ -101,9 +101,9 @@ public class Client {
 	 * @throws IOException
 	 */
 	public final void stop() throws IOException {
-		this.internals.getToServerWriter().flush();
-		this.internals.getToServerWriter().close();
-		this.internals.getFromServerReader().close();
+		this.internals.getToServerStream().flush();
+		this.internals.getToServerStream().close();
+		this.internals.getFromServerStream().close();
 		this.internals.getClientSocket().close();
 	}
 	

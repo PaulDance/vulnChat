@@ -32,7 +32,7 @@ public class ServerWorker implements Runnable {
 		while (this.client.isRunning() && this.isRunning) {			// While authorized to,
 			try {
 				do {												// wait for a message from the server;
-					serverMsg = client.getInternals().getFromServerReader().readLine();
+					serverMsg = client.getInternals().getFromServerStream().readUTF();
 				} while (serverMsg == null);						// if it respect the expected format,
 				
 				if (serverMsg.matches("[a-z]{3}\\s[\\p{Alnum}\\p{Punct}]{1,50}\\s?.{0,1000}")) {
@@ -54,7 +54,8 @@ public class ServerWorker implements Runnable {
 				
 				if (!this.client.getInternals().getClientSocket().isClosed()) {
 					this.client.getInternals().getPrintStream().println("Read failed");
-					exc.printStackTrace(this.client.getInternals().getPrintStream());
+					//exc.printStackTrace(this.client.getInternals().getPrintStream());
+					exc.printStackTrace();
 				}
 			}
 		}

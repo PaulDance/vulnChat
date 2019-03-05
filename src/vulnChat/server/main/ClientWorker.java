@@ -1,9 +1,8 @@
 package vulnChat.server.main;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import vulnChat.server.data.ClientEntry;
@@ -39,21 +38,28 @@ public class ClientWorker implements Runnable {
 	 */
 	public final void run() {
 		String clientMsg;
-		BufferedReader inFromConnect = null;
-		PrintWriter outToConnect = null;
+		//BufferedReader inFromConnect = null;
+		ObjectInputStream inFromConnect = null;
+		//PrintWriter outToConnect = null;
+		ObjectOutputStream outToConnect = null;
 		this.isRunning = true;
 		
 		try {																// Start the communication elements from and to the client,
-			inFromConnect = new BufferedReader(new InputStreamReader(this.commSocket.getInputStream()));
-			outToConnect = new PrintWriter(this.commSocket.getOutputStream(), true);
-		} catch (IOException exc) {
-			this.server.getPrintStream().println("in or out failed");		// report if failed.
-			exc.printStackTrace(this.server.getPrintStream());
+//			inFromConnect = new BufferedReader(new InputStreamReader(this.commSocket.getInputStream()));
+//			outToConnect = new PrintWriter(this.commSocket.getOutputStream(), true);
+			inFromConnect = new ObjectInputStream(this.commSocket.getInputStream());
+			outToConnect = new ObjectOutputStream(this.commSocket.getOutputStream());
+		} catch (IOException e) {
+			//this.server.getPrintStream().println("in or out failed");		// report if failed.
+			//e.printStackTrace(this.server.getPrintStream());
+			e.printStackTrace();
+			return;
 		}
 		
 		while (this.server.isRunning() && this.isRunning) {					// In a loop while authorized to,
 			try {
-				clientMsg = inFromConnect.readLine();						// wait for a message from the client;
+				//clientMsg = inFromConnect.readLine();						// wait for a message from the client;
+				clientMsg = inFromConnect.readUTF(); 
 				
 				if (clientMsg != null) {
 					this.server.getPrintStream().println(this.commSocket.getInetAddress() + ", " + this.commSocket.getPort() + ": " + clientMsg);
@@ -72,10 +78,14 @@ public class ClientWorker implements Runnable {
 					|| (clientEntry.ip.equals(this.commSocket.getInetAddress()) && clientEntry.port == this.commSocket.getPort())) {
 						if (elements[0].equals("new")) {					// "new": adds a newly connected client to the database and enables communication to others,
 							if (!(clientEntry != null && this.server.getSettings().checkNewClientName.getValue())) {
+//								this.server.getClientsMap().put(elements[1], new ClientEntry(this.commSocket.getInetAddress(),
+//																				this.commSocket.getPort(),
+//																				new BufferedReader(new InputStreamReader(this.commSocket.getInputStream())),
+//																				new PrintWriter(this.commSocket.getOutputStream(), true)));
 								this.server.getClientsMap().put(elements[1], new ClientEntry(this.commSocket.getInetAddress(),
-																				this.commSocket.getPort(),
-																				new BufferedReader(new InputStreamReader(this.commSocket.getInputStream())),
-																				new PrintWriter(this.commSocket.getOutputStream(), true)));
+										this.commSocket.getPort(),
+										inFromConnect,
+										outToConnect));
 								this.distributeMsg(clientMsg, elements[1]);
 								this.server.getPrintStream().println("ok new");
 							}
@@ -111,20 +121,22 @@ public class ClientWorker implements Runnable {
 					this.kickIfOn(inFromConnect, outToConnect);				// and kick if activated by the server.
 				}
 			}
-			catch (IOException exc) {
+			catch (IOException e) {
 				this.isRunning = false;
 				
 				if (!this.commSocket.isClosed()) {
 					this.server.getPrintStream().println("Read failed");
-					exc.printStackTrace(this.server.getPrintStream());
+					//e.printStackTrace(this.server.getPrintStream());
+					e.printStackTrace();
 				}
 			}
 		}
 		
 		try {
 			this.kick(inFromConnect, outToConnect);
-		} catch (IOException exc) {
-			exc.printStackTrace(this.server.getPrintStream());
+		} catch (IOException e) {
+			//e.printStackTrace(this.server.getPrintStream());
+			e.printStackTrace();
 		}
 	}
 	
@@ -132,23 +144,37 @@ public class ClientWorker implements Runnable {
 	 * Distributes a message to all the clients connected to the server, except the sender.
 	 * @param msg - the message as a {@link String} meant to be sent over the network
 	 * @param sender - the chatter nickname as a {@link String} of the sending client
+	 * @throws IOException 
 	 */
-	private final void distributeMsg(String msg, String sender) {
+	private final void distributeMsg(String msg, String sender) throws IOException {
 		for (String client: this.server.getClientsMap().keySet()) {				// For all the clients of the server,
 			if (!client.equals(sender)) {										// except the <sender>,
-				this.server.getClientsMap().get(client).out.println(msg);		// send them the <msg>
+//				this.server.getClientsMap().get(client).out.println(msg);		// send them the <msg>
+				this.server.getClientsMap().get(client).out.writeUTF(msg);
 				this.server.getPrintStream().println(msg + " --> " + client);	// and report that on the server's console.
 			}
 		}
 	}
 	
-	private final void kickIfOn(BufferedReader inFromConnect, PrintWriter outToConnect) throws IOException {
+//	private final void kickIfOn(BufferedReader inFromConnect, PrintWriter outToConnect) throws IOException {
+//		if (this.server.getSettings().kickOnHack.getValue()) {
+//			this.kick(inFromConnect, outToConnect);
+//		}
+//	}
+//	
+//	private final void kick(BufferedReader inFromConnect, PrintWriter outToConnect) throws IOException {
+//		inFromConnect.close();
+//		outToConnect.close();
+//		this.finalize();
+//	}
+	
+	private final void kickIfOn(ObjectInputStream inFromConnect, ObjectOutputStream outToConnect) throws IOException {
 		if (this.server.getSettings().kickOnHack.getValue()) {
 			this.kick(inFromConnect, outToConnect);
 		}
 	}
 	
-	private final void kick(BufferedReader inFromConnect, PrintWriter outToConnect) throws IOException {
+	private final void kick(ObjectInputStream inFromConnect, ObjectOutputStream outToConnect) throws IOException {
 		inFromConnect.close();
 		outToConnect.close();
 		this.finalize();

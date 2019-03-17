@@ -43,33 +43,33 @@ public class ConfigDialog extends JFrame {
 		super("Configuration");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
-		JPanel mainPanel = new JPanel();
+		final JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 		
-		JPanel srvIPpanel = new JPanel();
-		JTextField srvIPfield = new JTextField(defaultIP, 16);
+		final JPanel srvIPpanel = new JPanel();
+		final JTextField srvIPfield = new JTextField(defaultIP, 16);
 		srvIPpanel.add(new JLabel("Server IP Address", SwingConstants.LEFT));
 		srvIPpanel.add(srvIPfield);
 		mainPanel.add(srvIPpanel);
 		
-		JPanel srvPortPanel = new JPanel();
-		JTextField srvPortField = new JTextField(defaultPort, 5);
+		final JPanel srvPortPanel = new JPanel();
+		final JTextField srvPortField = new JTextField(defaultPort, 5);
 		srvPortPanel.add(new JLabel("Server Port", SwingConstants.LEFT));
 		srvPortPanel.add(srvPortField);
 		mainPanel.add(srvPortPanel);
 		
-		JPanel nicknamePanel = new JPanel();
-		JTextField nicknameField = new JTextField(20);
+		final JPanel nicknamePanel = new JPanel();
+		final JTextField nicknameField = new JTextField(20);
 		nicknamePanel.add(new JLabel("Nickname", SwingConstants.LEFT));
 		nicknamePanel.add(nicknameField);
 		mainPanel.add(nicknamePanel);
 		
-		JPanel txtObJPanel = new JPanel();
-		ButtonGroup txtObjGroup = new ButtonGroup();
-		JRadioButton txtChoice = new JRadioButton("Use fully clear text communication", true);
-		JRadioButton objChoice = new JRadioButton("Use serialized communication", false);
+		final JPanel txtObJPanel = new JPanel();
+		final ButtonGroup txtObjGroup = new ButtonGroup();
+		final JRadioButton txtChoice = new JRadioButton("Use fully clear text communication", true);
+		final JRadioButton objChoice = new JRadioButton("Use serialized communication", false);
 		
-		ActionListener choiceListen = new ActionListener() {
+		final ActionListener choiceListen = new ActionListener() {
 			@Override public void actionPerformed(ActionEvent e) {
 				client.settings.objTransmit.setValue(objChoice.isSelected());
 			}
@@ -83,15 +83,15 @@ public class ConfigDialog extends JFrame {
 		txtObJPanel.add(objChoice);
 		mainPanel.add(txtObJPanel);
 		
-		JPanel buttonsPanel = new JPanel();
-		JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");
+		final JPanel buttonsPanel = new JPanel();
+		final JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");
 		okButton.setActionCommand("ok");
 		cancelButton.setActionCommand("cancel");
 		
-		ActionListener cmdListen = new ActionListener() {					// Detects user clicks on the 'OK' button or the 'Cancel' button.
+		final ActionListener cmdListen = new ActionListener() {					// Detects user clicks on the 'OK' button or the 'Cancel' button.
 			public void actionPerformed(ActionEvent event) {
 				if (event.getActionCommand().equals("ok")) {
-					String ip = srvIPfield.getText().trim(), port = srvPortField.getText().trim(), nickname = nicknameField.getText().trim();
+					final String ip = srvIPfield.getText().trim(), port = srvPortField.getText().trim(), nickname = nicknameField.getText().trim();
 					if (ip.matches("^[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}$") && port.matches("[0-9]+")) {
 						try {
 							client.setChatterName(nickname);

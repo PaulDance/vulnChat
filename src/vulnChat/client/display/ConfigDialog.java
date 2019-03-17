@@ -65,6 +65,7 @@ public class ConfigDialog extends JFrame {
 		mainPanel.add(nicknamePanel);
 		
 		final JPanel txtObJPanel = new JPanel();
+		txtObJPanel.setLayout(new BoxLayout(txtObJPanel, BoxLayout.PAGE_AXIS));
 		final ButtonGroup txtObjGroup = new ButtonGroup();
 		final JRadioButton txtChoice = new JRadioButton("Use fully clear text communication", true);
 		final JRadioButton objChoice = new JRadioButton("Use serialized communication", false);

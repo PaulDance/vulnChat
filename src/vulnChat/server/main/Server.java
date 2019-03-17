@@ -86,7 +86,6 @@ public class Server {
 					  probeSocket.connect(InetAddress.getByName("8.8.8.8"), 10002);		// Trick to get the IP address the computer actually has on the network.
 					  Server.this.console.linePrinter.println("Server started on " + probeSocket.getLocalAddress().getHostAddress() + " port " + Server.this.connSocket.getLocalPort());
 				} catch (IOException e) {
-					//e.printStackTrace(Server.this.getPrintStream());
 					e.printStackTrace();
 				}
 				
@@ -95,7 +94,6 @@ public class Server {
 						(new Thread(new ClientWorker(Server.this, Server.this.connSocket.accept()))).start();
 					}
 					catch (IOException e) {
-						//e.printStackTrace(Server.this.console.printStream);
 						e.printStackTrace();
 					}
 				}
@@ -103,7 +101,6 @@ public class Server {
 				try {
 					Server.this.stop();													// when done looping, close everything.
 				} catch (IOException e) {
-					//e.printStackTrace(Server.this.getPrintStream());
 					e.printStackTrace();
 				}
 			}
@@ -116,13 +113,6 @@ public class Server {
 	public final HashMap<String, ClientEntry> getClientsMap() {
 		return this.clientsMap;
 	}
-	
-	/**
-	 * @return The {@link PrintStream} that enables one to print to the server's console.
-	 */
-//	public final PrintWriter getPrintStream() {
-//		return this.console.printStream;
-//	}
 	
 	/**
 	 * @return The {@link LinePrinter} that enables one to print to the server's console.

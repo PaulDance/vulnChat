@@ -54,9 +54,7 @@ public class ServerWorker implements Runnable {
 				
 				if (!this.client.getInternals().getClientSocket().isClosed()) {
 					this.client.getInternals().getLinePrinter().println("Read failed");
-					//exc.printStackTrace(this.client.getInternals().getPrintStream());
 					exc.printStackTrace();
-					//this.client.getInternals().getLinePrinter().println(exc.getMessage());
 				}
 			}
 		}

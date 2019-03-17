@@ -51,8 +51,6 @@ public class ClientWorker implements Runnable {
 			inFromConnect = new ObjectInputStream(this.commSocket.getInputStream());
 			outToConnect = new ObjectOutputStream(this.commSocket.getOutputStream());
 		} catch (IOException e) {
-			//this.server.getPrintStream().println("in or out failed");		// report if failed.
-			//e.printStackTrace(this.server.getPrintStream());
 			e.printStackTrace();
 			return;
 		}
@@ -79,10 +77,6 @@ public class ClientWorker implements Runnable {
 					|| (clientEntry.ip.equals(this.commSocket.getInetAddress()) && clientEntry.port == this.commSocket.getPort())) {
 						if (elements[0].equals("new")) {					// "new": adds a newly connected client to the database and enables communication to others,
 							if (!(clientEntry != null && this.server.getSettings().checkNewClientName.getValue())) {
-//								this.server.getClientsMap().put(elements[1], new ClientEntry(this.commSocket.getInetAddress(),
-//																				this.commSocket.getPort(),
-//																				new BufferedReader(new InputStreamReader(this.commSocket.getInputStream())),
-//																				new PrintWriter(this.commSocket.getOutputStream(), true)));
 								this.server.getClientsMap().put(elements[1], new ClientEntry(this.commSocket.getInetAddress(),
 										this.commSocket.getPort(),
 										inFromConnect,
@@ -127,7 +121,6 @@ public class ClientWorker implements Runnable {
 				
 				if (!this.commSocket.isClosed()) {
 					this.server.getLinePrinter().println("Read failed");
-					//e.printStackTrace(this.server.getPrintStream());
 					e.printStackTrace();
 				}
 			}
@@ -136,7 +129,6 @@ public class ClientWorker implements Runnable {
 		try {
 			this.kick(inFromConnect, outToConnect);
 		} catch (IOException e) {
-			//e.printStackTrace(this.server.getPrintStream());
 			e.printStackTrace();
 		}
 	}

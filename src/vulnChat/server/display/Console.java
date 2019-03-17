@@ -27,11 +27,6 @@ import vulnChat.data.LinePrinter;
 public class Console extends JFrame {
 	private static final long serialVersionUID = -5480714930071858422L;
 	/**
-	 * The print stream attached to the window frame's text area. Printing to it will result in printing to the text area.
-	 * @see PrintStream
-	 */
-	//public final PrintWriter printStream;
-	/**
 	 * The {@link LinePrinter} attached to the window frame's text area. Printing to it will result in printing to the text area.
 	 */
 	public final LinePrinter linePrinter;
@@ -64,12 +59,6 @@ public class Console extends JFrame {
 		printArea.setLineWrap(true);												// line breaks automatically added when the line is too long for the window,
 		printArea.setEditable(false);												// and is not editable: it is meant to be just a console, so no input.
 		
-//		this.printStream = new PrintWriter(new OutputStreamWriter(new OutputStream() {						// Creates and connects the console's print stream
-//			@Override public void write(int b) throws IOException {					// to write every character it receives
-//				printArea.append(String.valueOf((char) b));							// to the console's print area
-//				printArea.setCaretPosition(printArea.getDocument().getLength());	// and scrolling it down automatically.
-//			}
-//		}, "UTF8"), true);
 		this.linePrinter = new LinePrinter() {
 			@Override public void println(String text) {
 				this.print(text + "\n");
@@ -95,7 +84,6 @@ public class Console extends JFrame {
 		final ThreadLocalRandom randThread = ThreadLocalRandom.current();
 		
 		this.pack();
-		//this.setLocationRelativeTo(null);
 		this.setLocation(randThread.nextInt(0, screenDim.width - this.getSize().width), randThread.nextInt(0, screenDim.height - this.getSize().height));
 		this.setVisible(true);
 		this.requestFocus();
@@ -105,7 +93,6 @@ public class Console extends JFrame {
 	 * Stops the console and frees resources associated with it.
 	 */
 	public void stop() {
-		//this.printStream.close();
 		this.dispose();
 	}
 }

@@ -36,9 +36,7 @@ import vulnChat.data.LinePrinter;
  */
 public class InOutConsole extends JFrame {
 	private static final long serialVersionUID = -8174803948016946910L;
-	//public final PrintWriter inputWriter;
 	public final LinePrinter inputPrinter;
-	//private final PrintWriter outputWriter;
 	private final LinePrinter outputPrinter;
 	private int charLimit = 0;
 	
@@ -79,13 +77,6 @@ public class InOutConsole extends JFrame {
 		outArea.setCaretColor(Color.WHITE);
 		outArea.setLineWrap(true);
 		outArea.setEditable(false);
-		
-//		this.inputWriter = new PrintWriter(new OutputStreamWriter(new LineOutputStream() {
-//			@Override public void write(String line) throws IOException {
-//				outArea.append(line + "\n");
-//				outArea.setCaretPosition(outArea.getDocument().getLength());
-//			}
-//		}, "UTF8"), true);
 		
 		this.inputPrinter = new LinePrinter() {
 			@Override public void println(String line) {
@@ -159,8 +150,6 @@ public class InOutConsole extends JFrame {
 	 * @throws IOException
 	 */
 	public void stop() throws IOException {
-		//this.inputWriter.close();
-		//this.outputWriter.close();
 		this.dispose();
 	}
 	

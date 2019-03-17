@@ -28,20 +28,7 @@ public class ClientEntry {
 //	public final PrintWriter out;
 	public final ObjectInputStream in;
 	public final ObjectOutputStream out;
-	
-//	/**
-//	 * Builds the entry tuple describing the client.
-//	 * @param ip - the client's {@link InetAddress} identifying it on the network
-//	 * @param in - the {@link BufferedReader} connected to and receiving from the client
-//	 * @param out - the {@link PrintWriter} connected and sending to the client
-//	 */
-//	public ClientEntry(InetAddress ip, int port, BufferedReader in, PrintWriter out) {
-//		this.ip = ip;
-//		this.port = port;
-//		this.in = in;
-//		this.out = out;
-//	}
-	
+		
 	/**
 	 * Builds the entry tuple describing the client.
 	 * 

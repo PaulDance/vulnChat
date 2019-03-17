@@ -17,7 +17,6 @@ public class ClientInternals {
 	private Socket clientSocket;
 	private ObjectInputStream fromServerStream;
 	private ObjectOutputStream toServerStream;
-	//private PrintWriter printStream;
 	private LinePrinter linePrinter;
 	
 	public ClientInternals() {
@@ -47,15 +46,7 @@ public class ClientInternals {
 	public final void setToServerStream(ObjectOutputStream toServerStream) {
 		this.toServerStream = toServerStream;
 	}
-	
-//	public final PrintWriter getPrintStream() {
-//		return this.printStream;
-//	}
-//	
-//	public final void setPrintStream(PrintWriter printStream) {
-//		this.printStream = printStream;
-//	}
-	
+		
 	public LinePrinter getLinePrinter() {
 		return this.linePrinter;
 	}

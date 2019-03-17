@@ -20,5 +20,6 @@ import vulnChat.data.MutableBoolean;
 public class Settings {
 	public final MutableBoolean	checkNewClientName 		=	new MutableBoolean(false),
 								checkClientIPAndPort	=	new MutableBoolean(false),
-								kickOnHack				=	new MutableBoolean(false);
+								kickOnHack				=	new MutableBoolean(false),
+								objTransmit				=	new MutableBoolean(false);
 }

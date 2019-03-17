@@ -8,10 +8,12 @@ import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -106,8 +108,28 @@ public class ConfigDialog extends JFrame {
 		deselectAllButton.addActionListener(selectButtonsListener);
 		selectionButtonsPanel.add(selectAllButton);
 		selectionButtonsPanel.add(deselectAllButton);
-		
 		mainPanel.add(selectionButtonsPanel);
+		
+		final JPanel txtObJPanel = new JPanel();
+		txtObJPanel.setLayout(new BoxLayout(txtObJPanel, BoxLayout.PAGE_AXIS));
+		final ButtonGroup txtObjGroup = new ButtonGroup();
+		final JRadioButton txtChoice = new JRadioButton("Use fully clear text communication", true);
+		final JRadioButton objChoice = new JRadioButton("Use serialized communication", false);
+		
+		final ActionListener choiceListen = new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				serverSettings.objTransmit.setValue(objChoice.isSelected());
+			}
+		};
+		
+		txtChoice.addActionListener(choiceListen);
+		objChoice.addActionListener(choiceListen);
+		txtObjGroup.add(txtChoice);
+		txtObjGroup.add(objChoice);
+		txtObJPanel.add(txtChoice);
+		txtObJPanel.add(objChoice);
+		mainPanel.add(txtObJPanel);
+		
 		this.add(mainPanel);													// Finally you connect the main panel which holds everything to the frame.
 		this.setResizable(false);
 	}

@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import vulnChat.client.data.ClientInternals;
+import vulnChat.client.data.Settings;
 import vulnChat.client.display.ChatWindow;
 import vulnChat.client.display.ConfigDialog;
 
@@ -28,6 +29,7 @@ public class Client {
 	private ClientInternals internals;
 	private boolean isRunning = false;
 	private final ConfigDialog configDialog;
+	public final Settings settings;
 	private final ChatWindow chatWindow;
 	
 	/**
@@ -45,6 +47,7 @@ public class Client {
 	 * @throws IOException
 	 */
 	public Client() throws IOException {
+		this.settings = new Settings();
 		this.internals = new ClientInternals();
 		this.configDialog = new ConfigDialog(this, "Configuration", "127.0.0.1", "4321");
 		this.chatWindow = new ChatWindow(this, "vulnChat");

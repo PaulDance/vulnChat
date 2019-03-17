@@ -9,10 +9,12 @@ import java.net.ConnectException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -61,6 +63,25 @@ public class ConfigDialog extends JFrame {
 		nicknamePanel.add(new JLabel("Nickname", SwingConstants.LEFT));
 		nicknamePanel.add(nicknameField);
 		mainPanel.add(nicknamePanel);
+		
+		JPanel txtObJPanel = new JPanel();
+		ButtonGroup txtObjGroup = new ButtonGroup();
+		JRadioButton txtChoice = new JRadioButton("Use fully clear text communication", true);
+		JRadioButton objChoice = new JRadioButton("Use serialized communication", false);
+		
+		ActionListener choiceListen = new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				client.settings.objTransmit.setValue(objChoice.isSelected());
+			}
+		};
+		
+		txtChoice.addActionListener(choiceListen);
+		objChoice.addActionListener(choiceListen);
+		txtObjGroup.add(txtChoice);
+		txtObjGroup.add(objChoice);
+		txtObJPanel.add(txtChoice);
+		txtObJPanel.add(objChoice);
+		mainPanel.add(txtObJPanel);
 		
 		JPanel buttonsPanel = new JPanel();
 		JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");

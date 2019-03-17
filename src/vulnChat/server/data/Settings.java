@@ -1,5 +1,6 @@
 package vulnChat.server.data;
 
+import vulnChat.data.MutableBoolean;
 
 /**
  * This class defines objects acting as tuples describing a server's current settings state.

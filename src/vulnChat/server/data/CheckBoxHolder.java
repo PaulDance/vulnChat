@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
+import vulnChat.data.MutableBoolean;
+
 
 /**
  * Defines a holding object for {@link JCheckBox} objects, while extending {@link JPanel}.

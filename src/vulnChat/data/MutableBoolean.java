@@ -1,5 +1,7 @@
-package vulnChat.server.data;
+package vulnChat.data;
 
+import vulnChat.server.data.CheckBoxHolder;
+import vulnChat.server.data.Settings;
 
 /**
  * A mutable wrapper around the native boolean type, that is to say a class which

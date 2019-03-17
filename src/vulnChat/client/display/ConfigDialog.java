@@ -23,6 +23,7 @@ import vulnChat.client.main.ServerWorker;
 /**
  * Defines a window inheriting from {@link JFrame} in order to make a configuration window
  * for a {@link Client} to set a window title, an IP address and a port number to connect to.
+ * 
  * @author Paul Mabileau
  * @version 0.1
  */
@@ -31,10 +32,10 @@ public class ConfigDialog extends JFrame {
 	
 	/**
 	 * Builds the desired configuration dialog with a bit of customization available:
-	 * @param client - the calling {@link Client} instance
-	 * @param title - the window's title as a {@link String}
-	 * @param defaultIP - the IP address as a {@link String} that will be put by default in the corresponding {@link JTextField} upon startup
-	 * @param defaultPort - the default port number as a {@link String} that will be put by default in the corresponding {@link JTextField} upon startup
+	 * @param client The calling {@link Client} instance
+	 * @param title The window's title as a {@link String}
+	 * @param defaultIP The IP address as a {@link String} that will be put by default in the corresponding {@link JTextField} upon startup
+	 * @param defaultPort The default port number as a {@link String} that will be put by default in the corresponding {@link JTextField} upon startup
 	 */
 	public ConfigDialog(Client client, String title, String defaultIP, String defaultPort) {
 		super("Configuration");
@@ -77,7 +78,7 @@ public class ConfigDialog extends JFrame {
 							client.setRunning(true);
 							(new Thread(new ServerWorker(client))).start();
 							client.startChatWindow();
-							client.getInternals().getPrintStream().println(nickname + " joined the channel.");
+							client.getInternals().getLinePrinter().println(nickname + " joined the channel.");
 							ConfigDialog.this.stop();
 						} catch (ConnectException exc) {					// Check if server is available.
 							client.setRunning(false);

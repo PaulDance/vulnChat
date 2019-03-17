@@ -34,8 +34,8 @@ public class ConfigDialog extends JFrame {
 	
 	/**
 	 * Initializes the port dialog with custom window title and port number the server will then open its socket on.
-	 * @param title - The window title
-	 * @param defaultPort - The string representing the port number the server will then open its socket on.
+	 * @param title The window title
+	 * @param defaultPort The string representing the port number the server will then open its socket on.
 	 * @see Server
 	 */
 	public ConfigDialog(String title, String defaultPort) {

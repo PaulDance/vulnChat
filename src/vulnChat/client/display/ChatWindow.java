@@ -11,6 +11,7 @@ import vulnChat.data.LinePrinter;
 /**
  * This class extends {@link InOutConsole} and redefines its behavior specifically for the use
  * in an online chat application. Must be used by a {@link Client} object.
+ * 
  * @author Paul Mabileau
  * @version 0.1
  */
@@ -20,8 +21,9 @@ public class ChatWindow extends InOutConsole {
 	/**
 	 * Builds the {@link ChatWindow} instance by using the {@link InOutConsole} superclass and
 	 * associating to this object a {@link Client} object for the specific use meant by vulnChat.
-	 * @param client - the calling {@link Client} instance
-	 * @param title - the window's title as a {@link String}.
+	 * 
+	 * @param client The calling {@link Client} instance
+	 * @param title The window's title as a {@link String}.
 	 * @throws IOException 
 	 */
 	public ChatWindow(Client client, String title) throws IOException {
@@ -32,7 +34,7 @@ public class ChatWindow extends InOutConsole {
 			
 			@Override public void print(String line) {		// when receiving a line of text from the user, display it and send it;
 				System.out.println(line);
-				client.getInternals().getPrintStream().println(client.getChatterName() + ": " + line);
+				client.getInternals().getLinePrinter().println(client.getChatterName() + ": " + line);
 				try {
 					client.getInternals().getToServerStream().writeUTF("say " + client.getChatterName() + " " + line);
 					client.getInternals().getToServerStream().flush();
@@ -42,7 +44,7 @@ public class ChatWindow extends InOutConsole {
 			}
 		});
 		
-		client.getInternals().setPrintStream(this.inputWriter);					// give to the client object the stream to this window;
+		client.getInternals().setLinePrinter(this.inputPrinter);					// give to the client object the stream to this window;
 		this.setCharLimit(1000);
 		
 		this.addWindowListener(new WindowListener() {							// also, there is communication needed upon closing the window:

@@ -5,6 +5,7 @@ package vulnChat.server.data;
  * A mutable wrapper around the native boolean type, that is to say a class which
  * defines object having a single attribute: a boolean, and that this boolean can
  * be later retrieved or modified.
+ * 
  * @see Settings
  * @see CheckBoxHolder
  * @author Paul Mabileau
@@ -23,7 +24,7 @@ public class MutableBoolean implements Comparable<MutableBoolean> {
 	
 	/**
 	 * Constructs a {@link MutableBoolean} instance with the given boolean value.
-	 * @param bool - the value for the inner boolean field to have.
+	 * @param bool The value for the inner boolean field to have.
 	 * @see #MutableBoolean()
 	 */
 	public MutableBoolean(boolean bool) {
@@ -32,7 +33,7 @@ public class MutableBoolean implements Comparable<MutableBoolean> {
 	
 	/**
 	 * Resets the value to the given boolean
-	 * @param bool - the value for the inner boolean field to have.
+	 * @param bool The value for the inner boolean field to have.
 	 */
 	public void setValue(boolean bool) {
 		this.bool = bool;
@@ -46,7 +47,7 @@ public class MutableBoolean implements Comparable<MutableBoolean> {
 	}
 	
 	/**
-	 * @param obj - the object to test the equality on with the {@link MutableBoolean} instance
+	 * @param obj The object to test the equality on with the {@link MutableBoolean} instance
 	 * @return {@code true} if the two {@link MutableBoolean} instances have the same inner boolean field values, {@code false} otherwise.
 	 */
 	@Override
@@ -55,7 +56,7 @@ public class MutableBoolean implements Comparable<MutableBoolean> {
 	}
 
 	/**
-	 * @param mutableBool - the {@link MutableBoolean} to compare to
+	 * @param mutableBool The {@link MutableBoolean} to compare to
 	 * @return {@code 0} if the two {@link MutableBoolean} instances are equal,
 	 * {@code +1} if {@code this} has value {@code true} and mutableBool has
 	 * value {@code false}, {@code -1} otherwise

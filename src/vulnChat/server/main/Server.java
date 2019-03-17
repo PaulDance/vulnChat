@@ -3,7 +3,6 @@ package vulnChat.server.main;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -47,7 +46,7 @@ public class Server {
 	
 	/**
 	 * Initializes a server on given port.
-	 * @param port - the network port the server will start listening on for chat messages.
+	 * @param port The network port the server will start listening on for chat messages.
 	 * @throws IOException
 	 */
 	public Server(int port, Settings settings) throws IOException {
@@ -85,7 +84,7 @@ public class Server {
 				
 				try (final DatagramSocket probeSocket = new DatagramSocket()) {
 					  probeSocket.connect(InetAddress.getByName("8.8.8.8"), 10002);		// Trick to get the IP address the computer actually has on the network.
-					  Server.this.console.printStream.println("Server started on " + probeSocket.getLocalAddress().getHostAddress() + " port " + Server.this.connSocket.getLocalPort());
+					  Server.this.console.linePrinter.println("Server started on " + probeSocket.getLocalAddress().getHostAddress() + " port " + Server.this.connSocket.getLocalPort());
 				} catch (IOException e) {
 					//e.printStackTrace(Server.this.getPrintStream());
 					e.printStackTrace();
@@ -125,8 +124,11 @@ public class Server {
 //		return this.console.printStream;
 //	}
 	
-	public final LinePrinter getPrintStream() {
-		return this.console.printStream;
+	/**
+	 * @return The {@link LinePrinter} that enables one to print to the server's console.
+	 */
+	public final LinePrinter getLinePrinter() {
+		return this.console.linePrinter;
 	}
 	
 	/**

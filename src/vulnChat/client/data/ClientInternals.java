@@ -18,7 +18,7 @@ public class ClientInternals {
 	private ObjectInputStream fromServerStream;
 	private ObjectOutputStream toServerStream;
 	//private PrintWriter printStream;
-	private LinePrinter printStream;
+	private LinePrinter linePrinter;
 	
 	public ClientInternals() {
 		
@@ -56,11 +56,11 @@ public class ClientInternals {
 //		this.printStream = printStream;
 //	}
 	
-	public LinePrinter getPrintStream() {
-		return this.printStream;
+	public LinePrinter getLinePrinter() {
+		return this.linePrinter;
 	}
 	
-	public final void setPrintStream(LinePrinter printStream) {
-		this.printStream = printStream;
+	public final void setLinePrinter(LinePrinter linePrinter) {
+		this.linePrinter = linePrinter;
 	}
 }

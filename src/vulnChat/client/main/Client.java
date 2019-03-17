@@ -25,14 +25,14 @@ import vulnChat.client.display.ConfigDialog;
  */
 public class Client {
 	private String chatterName = "";
-	private final ClientInternals internals;
+	private ClientInternals internals;
 	private boolean isRunning = false;
 	private final ConfigDialog configDialog;
 	private final ChatWindow chatWindow;
 	
 	/**
 	 * A {@link Client} instance is executable by Java. This starts a new client.
-	 * @param args - the array of {@link String} of calling arguments
+	 * @param args The array of {@link String} of calling arguments
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
@@ -59,8 +59,8 @@ public class Client {
 	
 	/**
 	 * Sets up the {@link Client} to connect to a new chat server.
-	 * @param ipAddr - the IP address as a {@link String} to connect to 
-	 * @param port - the port number of the server
+	 * @param ipAddr The IP address as a {@link String} to connect to 
+	 * @param port The port number of the server
 	 * @throws IOException
 	 */
 	public final void connectTo(String ipAddr, int port) throws IOException {
@@ -90,7 +90,7 @@ public class Client {
 	
 	/**
 	 * Sets isRunning
-	 * @param state - the new state of isRunning
+	 * @param state The new state of isRunning
 	 */
 	public final void setRunning(boolean state) {
 		this.isRunning = state;
@@ -116,7 +116,7 @@ public class Client {
 	
 	/**
 	 * Sets the client's chatter name to a new value.
-	 * @param chatterName - the said new value
+	 * @param chatterName The said new value
 	 */
 	public void setChatterName(String chatterName) {
 		this.chatterName = chatterName;

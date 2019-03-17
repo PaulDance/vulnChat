@@ -13,6 +13,7 @@ import vulnChat.server.data.ClientEntry;
  * of its chat messages to all the other clients. It is meant to be constructed for use by a Thread object:
  * the waiting for a new message from the managed client by an instance of this class causes the execution
  * flow to block until a line of text is received from the network.
+ * 
  * @see Thread
  * @see Server
  * @author Paul Mabileau
@@ -25,8 +26,8 @@ public class ClientWorker implements Runnable {
 	
 	/**
 	 * Constructs a {@link ClientWorker} objects connected to the calling chat {@link Server} and its communication {@link Socket} 
-	 * @param server - the {@link Server} object that calls this constructor
-	 * @param commSocket - the {@link Socket} object of the server linked to the newly connected client
+	 * @param server The {@link Server} object that calls this constructor
+	 * @param commSocket The {@link Socket} object of the server linked to the newly connected client
 	 */
 	public ClientWorker(Server server, Socket commSocket) {
 		this.server = server;
@@ -62,10 +63,10 @@ public class ClientWorker implements Runnable {
 				clientMsg = inFromConnect.readUTF(); 
 				
 				if (clientMsg != null) {
-					this.server.getPrintStream().println(this.commSocket.getInetAddress() + ", " + this.commSocket.getPort() + ": " + clientMsg);
+					this.server.getLinePrinter().println(this.commSocket.getInetAddress() + ", " + this.commSocket.getPort() + ": " + clientMsg);
 				}
 				else {
-					this.server.getPrintStream().println("connection ended to: " + this.commSocket.getInetAddress());
+					this.server.getLinePrinter().println("connection ended to: " + this.commSocket.getInetAddress());
 					this.kick(inFromConnect, outToConnect);
 					return;
 				}
@@ -87,10 +88,10 @@ public class ClientWorker implements Runnable {
 										inFromConnect,
 										outToConnect));
 								this.distributeMsg(clientMsg, elements[1]);
-								this.server.getPrintStream().println("ok new");
+								this.server.getLinePrinter().println("ok new");
 							}
 							else {											// but if the client lied and the server does not permit it,
-								this.server.getPrintStream().println("not new");
+								this.server.getLinePrinter().println("not new");
 								this.kickIfOn(inFromConnect, outToConnect);	// kick him in the butt;
 							}
 						}
@@ -100,24 +101,24 @@ public class ClientWorker implements Runnable {
 							}
 							this.server.getClientsMap().remove(elements[1]);
 							this.distributeMsg(clientMsg, elements[1]);
-							this.server.getPrintStream().println("ok bye");
+							this.server.getLinePrinter().println("ok bye");
 						}
 						else if (elements[0].equals("say")) {				// "say": sends a message on the server for all the clients to receive;
 							this.distributeMsg(clientMsg, elements[1]);
-							this.server.getPrintStream().println("ok say");
+							this.server.getLinePrinter().println("ok say");
 						}
 						else {												// "$!?%$£": nothing interesting;
-							this.server.getPrintStream().println("not an operation");
+							this.server.getLinePrinter().println("not an operation");
 							this.kickIfOn(inFromConnect, outToConnect);
 						}
 					}
 					else {
-						this.server.getPrintStream().println("wrong IP or port");	// wrong IP or port number: ignore
+						this.server.getLinePrinter().println("wrong IP or port");	// wrong IP or port number: ignore
 						this.kickIfOn(inFromConnect, outToConnect);			// and kick if activated by the server;
 					}
 				}
 				else {
-					this.server.getPrintStream().println("not a msg");		// wrong format: ignore
+					this.server.getLinePrinter().println("not a msg");		// wrong format: ignore
 					this.kickIfOn(inFromConnect, outToConnect);				// and kick if activated by the server.
 				}
 			}
@@ -125,7 +126,7 @@ public class ClientWorker implements Runnable {
 				this.isRunning = false;
 				
 				if (!this.commSocket.isClosed()) {
-					this.server.getPrintStream().println("Read failed");
+					this.server.getLinePrinter().println("Read failed");
 					//e.printStackTrace(this.server.getPrintStream());
 					e.printStackTrace();
 				}
@@ -142,8 +143,8 @@ public class ClientWorker implements Runnable {
 	
 	/**
 	 * Distributes a message to all the clients connected to the server, except the sender.
-	 * @param msg - the message as a {@link String} meant to be sent over the network
-	 * @param sender - the chatter nickname as a {@link String} of the sending client
+	 * @param msg The message as a {@link String} meant to be sent over the network
+	 * @param sender The chatter nickname as a {@link String} of the sending client
 	 * @throws IOException 
 	 */
 	private final void distributeMsg(String msg, String sender) throws IOException {
@@ -151,7 +152,7 @@ public class ClientWorker implements Runnable {
 			if (!client.equals(sender)) {										// except the <sender>,
 //				this.server.getClientsMap().get(client).out.println(msg);		// send them the <msg>
 				this.server.getClientsMap().get(client).out.writeUTF(msg);
-				this.server.getPrintStream().println(msg + " --> " + client);	// and report that on the server's console.
+				this.server.getLinePrinter().println(msg + " --> " + client);	// and report that on the server's console.
 			}
 		}
 	}

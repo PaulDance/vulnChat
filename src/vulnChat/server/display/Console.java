@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -18,10 +17,10 @@ import vulnChat.data.LinePrinter;
 
 /**
  * This class extends the JFrame graphical frame class to create a small window containing a
- * simple text area on black background you can print to using the generated PrintStream.
+ * simple text area on black background you can print to using the generated {@link LinePrinter}.
+ * 
  * @see JFrame
  * @see JTextArea
- * @see PrintStream
  * @author Paul Mabileau
  * @version 0.1
  */
@@ -32,7 +31,10 @@ public class Console extends JFrame {
 	 * @see PrintStream
 	 */
 	//public final PrintWriter printStream;
-	public final LinePrinter printStream;
+	/**
+	 * The {@link LinePrinter} attached to the window frame's text area. Printing to it will result in printing to the text area.
+	 */
+	public final LinePrinter linePrinter;
 	
 	/**
 	 * Initializes a Console object with "Console" as a title, 20 rows and 90 columns.
@@ -44,9 +46,10 @@ public class Console extends JFrame {
 	
 	/**
 	 * Initializes a Console object with a custom title and window sizes.
-	 * @param title - The window title
-	 * @param rows - The number of character rows for the window's text area format
-	 * @param columns - The number of character columns for the window's text area format
+	 * 
+	 * @param title The window title
+	 * @param rows The number of character rows for the window's text area format
+	 * @param columns The number of character columns for the window's text area format
 	 * @throws UnsupportedEncodingException 
 	 */
 	public Console(String title, int rows, int columns) throws UnsupportedEncodingException {
@@ -67,7 +70,7 @@ public class Console extends JFrame {
 //				printArea.setCaretPosition(printArea.getDocument().getLength());	// and scrolling it down automatically.
 //			}
 //		}, "UTF8"), true);
-		this.printStream = new LinePrinter() {
+		this.linePrinter = new LinePrinter() {
 			@Override public void println(String text) {
 				this.print(text + "\n");
 			}

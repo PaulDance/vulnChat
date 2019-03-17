@@ -15,6 +15,7 @@ import vulnChat.client.display.InOutConsole;
  * by overriding the {@code write(int b)} method and record in an {@link ArrayList} the characters
  * received until a newline occurs. In this case, the {@code write(String line)} method is called on the line
  * obtained by concatenating the previous characters together into a {@code String}.
+ * 
  * @author Paul Mabileau
  * @version 0.1
  * @see InOutConsole
@@ -32,8 +33,8 @@ public abstract class LineOutputStream extends OutputStream {
 	
 	/**
 	 * Collects the received character (as an {@code int}) in the character buffer if it is not a new line character.
-	 * If it is and it is the first one encountered after a series on non new line characters, then the {@code write(String line}
-	 * is called on the {@code String} obtained by concatenating the previous characters together.
+	 * If it is and it is the first one encountered after a series on non new line characters, then the {@link #write(String)}
+	 * is called on the {@link String} obtained by concatenating the previous characters together.
 	 */
 	@Override
 	public void write(int b) throws IOException {
@@ -52,7 +53,7 @@ public abstract class LineOutputStream extends OutputStream {
 	
 	/**
 	 * Defines the action to follow when a line of characters is sent in the stream.
-	 * @param line - the {@code String} representing the line of characters sent in the stream
+	 * @param line The {@code String} representing the line of characters sent in the stream
 	 * @throws IOException
 	 */
 	public abstract void write(String line) throws IOException;

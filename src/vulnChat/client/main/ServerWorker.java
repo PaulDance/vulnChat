@@ -16,7 +16,7 @@ public class ServerWorker implements Runnable {
 	
 	/**
 	 * Default constructor: saves the given {@link Client} object for later use.
-	 * @param client - the {@link Client} object that calls this constructor
+	 * @param client The {@link Client} object that calls this constructor
 	 */
 	public ServerWorker(Client client) {
 		this.client = client;
@@ -39,13 +39,13 @@ public class ServerWorker implements Runnable {
 					String[] elements = serverMsg.split(" ", 3);	// separate the three elements of the message,
 					
 					if (elements[0].equals("new")) {				// "new" action -> a new user joind the channel,
-						this.client.getInternals().getPrintStream().println(elements[1] + " joined the channel.");
+						this.client.getInternals().getLinePrinter().println(elements[1] + " joined the channel.");
 					}
 					else if (elements[0].equals("bye")) {			// "bye" action -> a user left the channel,
-						this.client.getInternals().getPrintStream().println(elements[1] + " left the channel.");
+						this.client.getInternals().getLinePrinter().println(elements[1] + " left the channel.");
 					}
 					else if (elements[0].equals("say")) {			// "say" action -> someone said something (probably useless, like always).
-						this.client.getInternals().getPrintStream().println(elements[1] + ": " + elements[2]);
+						this.client.getInternals().getLinePrinter().println(elements[1] + ": " + elements[2]);
 					}
 				}
 			}
@@ -53,9 +53,10 @@ public class ServerWorker implements Runnable {
 				this.isRunning = false;
 				
 				if (!this.client.getInternals().getClientSocket().isClosed()) {
-					this.client.getInternals().getPrintStream().println("Read failed");
+					this.client.getInternals().getLinePrinter().println("Read failed");
 					//exc.printStackTrace(this.client.getInternals().getPrintStream());
 					exc.printStackTrace();
+					//this.client.getInternals().getLinePrinter().println(exc.getMessage());
 				}
 			}
 		}

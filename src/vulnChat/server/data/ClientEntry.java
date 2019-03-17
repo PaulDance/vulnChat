@@ -1,10 +1,8 @@
 package vulnChat.server.data;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.InetAddress;
 
 
@@ -15,8 +13,8 @@ import java.net.InetAddress;
  * <ul>
  *		<li>an {@link InetAdress} to save the client's IP address</li>
  *		<li>a port number to save the client's port number</li>
- *		<li>an input {@link BufferedReader} that enables reading messages lines sent by the client</li>
- *		<li>an output {@link PrintWriter} you can {@code .print()} or {@code .println()} on to send lines to the client over the network</li>
+ *		<li>an input {@link ObjectInputStream} that enables reading messages lines sent by the client</li>
+ *		<li>an output {@link ObjectOutputStream} you can {@code .print()} or {@code .println()} on to send lines to the client over the network</li>
  * </ul>
  * 
  * @see Client
@@ -31,12 +29,12 @@ public class ClientEntry {
 	public final ObjectInputStream in;
 	public final ObjectOutputStream out;
 	
-	/**
-	 * Builds the entry tuple describing the client.
-	 * @param ip - the client's {@link InetAddress} identifying it on the network
-	 * @param in - the {@link BufferedReader} connected to and receiving from the client
-	 * @param out - the {@link PrintWriter} connected and sending to the client
-	 */
+//	/**
+//	 * Builds the entry tuple describing the client.
+//	 * @param ip - the client's {@link InetAddress} identifying it on the network
+//	 * @param in - the {@link BufferedReader} connected to and receiving from the client
+//	 * @param out - the {@link PrintWriter} connected and sending to the client
+//	 */
 //	public ClientEntry(InetAddress ip, int port, BufferedReader in, PrintWriter out) {
 //		this.ip = ip;
 //		this.port = port;
@@ -44,6 +42,13 @@ public class ClientEntry {
 //		this.out = out;
 //	}
 	
+	/**
+	 * Builds the entry tuple describing the client.
+	 * 
+	 * @param ip The client's {@link InetAddress} identifying it on the network
+	 * @param in The {@link ObjectInputStream} connected to and receiving from the client
+	 * @param out The {@link ObjectOutputStream} connected and sending to the client
+	 */
 	public ClientEntry(InetAddress ip, int port, ObjectInputStream in, ObjectOutputStream out) {
 		this.ip = ip;
 		this.port = port;

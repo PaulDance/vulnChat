@@ -37,9 +37,9 @@ import vulnChat.data.LinePrinter;
 public class InOutConsole extends JFrame {
 	private static final long serialVersionUID = -8174803948016946910L;
 	//public final PrintWriter inputWriter;
-	public final LinePrinter inputWriter;
+	public final LinePrinter inputPrinter;
 	//private final PrintWriter outputWriter;
-	private final LinePrinter outputWriter;
+	private final LinePrinter outputPrinter;
 	private int charLimit = 0;
 	
 	/**
@@ -59,14 +59,14 @@ public class InOutConsole extends JFrame {
 	 * key strikes, but one should know that the information is sent by the console on the given stream when the user
 	 * presses the enter key, that is to say line by line.
 	 * @param title - the title as a {@link String} that will be given to the {@link JFrame}
-	 * @param outputWriter - the {@link PrintStream} object the console should be able to use as an output
+	 * @param outputPrinter - the {@link PrintStream} object the console should be able to use as an output
 	 * @throws IOException 
 	 * @see InOutConsole
 	 * @see LineOutputStream
 	 */
-	public InOutConsole(String title, LinePrinter outputWriter) throws IOException {
+	public InOutConsole(String title, LinePrinter outputPrinter) throws IOException {
 		super(title);
-		this.outputWriter = outputWriter;
+		this.outputPrinter = outputPrinter;
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		final JPanel mainPanel = new JPanel();
@@ -87,7 +87,7 @@ public class InOutConsole extends JFrame {
 //			}
 //		}, "UTF8"), true);
 		
-		this.inputWriter = new LinePrinter() {
+		this.inputPrinter = new LinePrinter() {
 			@Override public void println(String line) {
 				this.print(line + "\n");
 			}
@@ -116,7 +116,7 @@ public class InOutConsole extends JFrame {
 				
 				if (event.getKeyChar() == '\n') {						// if return is pressed,
 					if (!text.equals("\n")) {
-						InOutConsole.this.outputWriter.println(text);
+						InOutConsole.this.outputPrinter.println(text);
 					}
 					
 					inArea.setText("");
@@ -164,6 +164,10 @@ public class InOutConsole extends JFrame {
 		this.dispose();
 	}
 	
+	/**
+	 * Sets a limit to the length of messages the client can send.
+	 * @param limit The maximum length as an integer
+	 */
 	public void setCharLimit(int limit) {
 		if (limit > 0) {
 			this.charLimit = limit;

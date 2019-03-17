@@ -51,7 +51,7 @@ public class Console extends JFrame {
 		super(title);																// Parent constructor initializes the frame titled <title>.
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);						// Sets the behavior of the window to kill itself when closed (when cross button clicked).
 		
-		JTextArea printArea = new JTextArea(rows, columns);							// Print area settings with (<rows>, <columns>) format,
+		final JTextArea printArea = new JTextArea(rows, columns);							// Print area settings with (<rows>, <columns>) format,
 		printArea.setBackground(Color.BLACK);										// black background color,
 		printArea.setForeground(Color.LIGHT_GRAY);									// light gray color,
 		printArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 17));				// monospaced 17pts font,
@@ -71,7 +71,7 @@ public class Console extends JFrame {
 		};
 		
 		// Adds a scroll bar to the right of the text area that activates only when text is overflowing.
-		JScrollPane scrollPane = new JScrollPane(printArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		final JScrollPane scrollPane = new JScrollPane(printArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		this.add(scrollPane, BorderLayout.CENTER);
 		this.setResizable(true);
 	}

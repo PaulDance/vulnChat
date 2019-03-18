@@ -1,2 +1,4 @@
 # Ignore the TODO list:
 TODO.txt
+# Ignore the Eclipse bin classpath folder:
+bin

@@ -25,4 +25,7 @@ public abstract class Action implements Serializable {
 	public Action(final String chatterName) {
 		this.chatterName = chatterName;
 	}
+	
+	@Override
+	public abstract String toString();
 }

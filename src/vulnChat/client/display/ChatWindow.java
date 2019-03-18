@@ -5,7 +5,9 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 
 import vulnChat.client.main.Client;
+import vulnChat.data.Bye;
 import vulnChat.data.LinePrinter;
+import vulnChat.data.Say;
 
 
 /**
@@ -33,11 +35,9 @@ public class ChatWindow extends InOutConsole {
 			}
 			
 			@Override public void print(String line) {		// when receiving a line of text from the user, display it and send it;
-				System.out.println(line);
 				client.getInternals().getLinePrinter().println(client.getChatterName() + ": " + line);
 				try {
-					client.getInternals().getToServerStream().writeUTF("say " + client.getChatterName() + " " + line);
-					client.getInternals().getToServerStream().flush();
+					client.sendToServer(new Say(client.getChatterName(), line));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -50,8 +50,7 @@ public class ChatWindow extends InOutConsole {
 		this.addWindowListener(new WindowListener() {							// also, there is communication needed upon closing the window:
 			public void windowClosing(WindowEvent event) {						// send to the server an end connection message.
 				try {
-					client.getInternals().getToServerStream().writeUTF("bye " + client.getChatterName());
-					client.getInternals().getToServerStream().flush();
+					client.sendToServer(new Bye(client.getChatterName()));
 					client.stop();
 					ChatWindow.this.stop();
 				} catch (IOException e) {

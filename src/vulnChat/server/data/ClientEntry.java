@@ -1,8 +1,10 @@
 package vulnChat.server.data;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 
 
@@ -24,32 +26,42 @@ import java.net.InetAddress;
 public class ClientEntry {
 	public final InetAddress ip;
 	public final int port;
-//	public final BufferedReader in;
-//	public final PrintWriter out;
-	public final ObjectInputStream in;
-	public final ObjectOutputStream out;
+	public final BufferedReader txtIn;
+	public final PrintWriter txtOut;
+	public final ObjectInputStream objIn;
+	public final ObjectOutputStream objOut;
 		
 	/**
 	 * Builds the entry tuple describing the client.
 	 * 
 	 * @param ip The client's {@link InetAddress} identifying it on the network
-	 * @param in The {@link ObjectInputStream} connected to and receiving from the client
-	 * @param out The {@link ObjectOutputStream} connected and sending to the client
+	 * @param objIn The {@link ObjectInputStream} connected to and receiving from the client
+	 * @param objOut The {@link ObjectOutputStream} connected and sending to the client
 	 */
-	public ClientEntry(InetAddress ip, int port, ObjectInputStream in, ObjectOutputStream out) {
+	public ClientEntry(InetAddress ip, int port,
+			BufferedReader txtIn, PrintWriter txtOut,
+			ObjectInputStream objIn, ObjectOutputStream objOut) {
 		this.ip = ip;
 		this.port = port;
-		this.in = in;
-		this.out = out;
+		this.txtIn = txtIn;
+		this.txtOut = txtOut;
+		this.objIn = objIn;
+		this.objOut = objOut;
 	}
 	
 	/**
 	 * Flushes, closes and releases resources associated with streams and writers of this entry. 
 	 * @throws IOException
 	 */
-	public void close() throws IOException {
-		this.in.close();
-		this.out.flush();
-		this.out.close();
+	public void close(final boolean objTransmit) throws IOException {
+		if (objTransmit) {
+			this.objIn.close();
+			this.objOut.flush();
+			this.objOut.close();
+		} else {
+			this.txtIn.close();
+			this.txtOut.flush();
+			this.txtOut.close();
+		}
 	}
 }

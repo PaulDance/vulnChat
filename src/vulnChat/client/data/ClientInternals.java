@@ -1,50 +1,66 @@
 package vulnChat.client.data;
 
+import java.io.BufferedReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.SocketException;
 
 import vulnChat.data.LinePrinter;
 
 /**
  * Dummy class simulating a tuple holding the necessary information for a client object to communicate with a chat server
- * in order to enable its use in an anonymous class instance which refuses access to non-final objects.
+ * in order to enable its use by other classes creating the vulnChat. Might be deleted in the future.
+ * 
  * @author Paul Mabileau
- * @version 0.1
+ * @version 0.2
  */
 public class ClientInternals {
 	private Socket clientSocket;
-	private ObjectInputStream fromServerStream;
-	private ObjectOutputStream toServerStream;
+	private BufferedReader fromServerTextReader;
+	private PrintWriter toServerTextWriter;
+	private ObjectInputStream fromServerObjectStream;
+	private ObjectOutputStream toServerObjectStream;
 	private LinePrinter linePrinter;
-	
-	public ClientInternals() {
-		
-	}
 	
 	public final Socket getClientSocket() {
 		return this.clientSocket;
 	}
 	
-	public final void setClientSocket(Socket clientSocket) throws SocketException {
+	public final void setClientSocket(Socket clientSocket) {
 		this.clientSocket = clientSocket;
 	}
 	
-	public final ObjectInputStream getFromServerStream() {
-		return this.fromServerStream;
+	public final BufferedReader getFromServerTextReader() {
+		return this.fromServerTextReader;
+	}
+
+	public final void setFromServerTextReader(BufferedReader fromServerTextReader) {
+		this.fromServerTextReader = fromServerTextReader;
+	}
+
+	public final PrintWriter getToServerTextWriter() {
+		return this.toServerTextWriter;
+	}
+
+	public final void setToServerTextWriter(PrintWriter toServerTextWriter) {
+		this.toServerTextWriter = toServerTextWriter;
+	}
+
+	public final ObjectInputStream getFromServerObjectStream() {
+		return this.fromServerObjectStream;
 	}
 	
-	public final void setFromServerStream(ObjectInputStream fromServerStream) {
-		this.fromServerStream = fromServerStream;
+	public final void setFromServerObjectStream(ObjectInputStream fromServerObjectStream) {
+		this.fromServerObjectStream = fromServerObjectStream;
 	}
 	
-	public final ObjectOutputStream getToServerStream() {
-		return this.toServerStream;
+	public final ObjectOutputStream getToServerObjectStream() {
+		return this.toServerObjectStream;
 	}
 	
-	public final void setToServerStream(ObjectOutputStream toServerStream) {
-		this.toServerStream = toServerStream;
+	public final void setToServerObjectStream(ObjectOutputStream toServerObjectStream) {
+		this.toServerObjectStream = toServerObjectStream;
 	}
 		
 	public LinePrinter getLinePrinter() {

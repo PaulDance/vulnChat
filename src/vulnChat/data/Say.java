@@ -22,4 +22,9 @@ public class Say extends Action {
 		super(chatterName);
 		this.message = message;
 	}
+
+	@Override
+	public String toString() {
+		return "say " + this.chatterName + " " + this.message;
+	}
 }

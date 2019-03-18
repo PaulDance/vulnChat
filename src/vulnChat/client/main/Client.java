@@ -1,14 +1,19 @@
 package vulnChat.client.main;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 import vulnChat.client.data.ClientInternals;
 import vulnChat.client.data.Settings;
 import vulnChat.client.display.ChatWindow;
 import vulnChat.client.display.ConfigDialog;
+import vulnChat.data.Action;
+import vulnChat.data.New;
 
 
 /**
@@ -69,10 +74,15 @@ public class Client {
 	public final void connectTo(String ipAddr, int port) throws IOException {
 		this.internals.setClientSocket(new Socket(ipAddr, port));
 		this.internals.getClientSocket().setKeepAlive(true);
-		this.internals.setToServerStream(new ObjectOutputStream(this.internals.getClientSocket().getOutputStream()));
-		this.internals.setFromServerStream(new ObjectInputStream(this.internals.getClientSocket().getInputStream()));
-		this.internals.getToServerStream().writeUTF("new " + this.chatterName);
-		this.internals.getToServerStream().flush();
+		
+		if (this.settings.objTransmit.getValue()) {
+			this.internals.setToServerObjectStream(new ObjectOutputStream(this.internals.getClientSocket().getOutputStream()));
+			this.internals.setFromServerObjectStream(new ObjectInputStream(this.internals.getClientSocket().getInputStream()));
+		} else {
+			this.internals.setToServerTextWriter(new PrintWriter(this.internals.getClientSocket().getOutputStream(), true));
+			this.internals.setFromServerTextReader(new BufferedReader(new InputStreamReader(this.internals.getClientSocket().getInputStream())));
+		}
+		this.sendToServer(new New(this.chatterName));
 	}
 	
 	/**
@@ -104,9 +114,9 @@ public class Client {
 	 * @throws IOException
 	 */
 	public final void stop() throws IOException {
-		this.internals.getToServerStream().flush();
-		this.internals.getToServerStream().close();
-		this.internals.getFromServerStream().close();
+		this.internals.getToServerObjectStream().flush();
+		this.internals.getToServerObjectStream().close();
+		this.internals.getFromServerObjectStream().close();
 		this.internals.getClientSocket().close();
 	}
 	
@@ -115,6 +125,22 @@ public class Client {
 	 */
 	public final ClientInternals getInternals() {
 		return this.internals;
+	}
+	
+	/**
+	 * Takes an {@link Action} and decides to send it over the network to the server when in serialized mode,
+	 * or deconstruct it and send the corresponding text message to the server.
+	 * @param action The {@link Action} to be sent itself or its corresponding {@link String } to the server.
+	 * @throws IOException
+	 */
+	public void sendToServer(Action action) throws IOException {
+		if (this.settings.objTransmit.getValue()) {
+			this.internals.getToServerObjectStream().writeObject(action);
+			this.internals.getToServerObjectStream().flush();
+		}
+		else {
+			this.internals.getToServerTextWriter().println(action.toString());
+		}
 	}
 	
 	/**

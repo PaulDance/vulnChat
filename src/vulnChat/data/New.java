@@ -17,4 +17,9 @@ public class New extends Action {
 	public New(final String chatterName) {
 		super(chatterName);
 	}
+
+	@Override
+	public String toString() {
+		return "new " + this.chatterName;
+	}
 }

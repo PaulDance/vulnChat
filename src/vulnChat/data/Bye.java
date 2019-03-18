@@ -18,4 +18,9 @@ public class Bye extends Action {
 	public Bye(final String chatterName) {
 		super(chatterName);
 	}
+
+	@Override
+	public String toString() {
+		return "bye " + this.chatterName;
+	}
 }

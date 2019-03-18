@@ -1,6 +1,12 @@
 package vulnChat.client.main;
 
+import java.io.EOFException;
 import java.io.IOException;
+
+import vulnChat.data.Action;
+import vulnChat.data.Bye;
+import vulnChat.data.New;
+import vulnChat.data.Say;
 
 
 /**
@@ -26,16 +32,46 @@ public class ServerWorker implements Runnable {
 	 * Starts the background task of waiting for messages from the server and executing them for the associated client.
 	 */
 	public final void run() {
-		String serverMsg;
+		String serverMsg = null;
+		Action serverAction = null;
 		this.isRunning = true;
 		
 		while (this.client.isRunning() && this.isRunning) {			// While authorized to,
-			try {
-				do {												// wait for a message from the server;
-					serverMsg = client.getInternals().getFromServerStream().readUTF();
-				} while (serverMsg == null);						// if it respect the expected format,
+			try {													// wait for a message from the server;
+				if (client.settings.objTransmit.getValue()) {
+					do {
+						try {
+							serverAction = (Action) client.getInternals().getFromServerObjectStream().readObject();
+						}
+						catch (EOFException exc) {
+							try {
+								serverAction = null;
+								Thread.sleep(10);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					} while (serverAction == null);
+				}
+				else {
+					do {
+						serverMsg = client.getInternals().getFromServerTextReader().readLine();
+					} while (serverMsg == null);
+				}
 				
-				if (serverMsg.matches("[a-z]{3}\\s[\\p{Alnum}\\p{Punct}]{1,50}\\s?.{0,1000}")) {
+				if (client.settings.objTransmit.getValue()) {
+					if (serverAction instanceof New) {
+						this.client.getInternals().getLinePrinter().println(serverAction.chatterName + " joined the channel.");
+					}
+					else if (serverAction instanceof Bye) {
+						this.client.getInternals().getLinePrinter().println(serverAction.chatterName + " left the channel.");
+					}
+					else if (serverAction instanceof Say) {
+						final Say actionSay = (Say) serverAction; 
+						this.client.getInternals().getLinePrinter().println(actionSay.chatterName + ": " + actionSay.message);
+					}
+				}		// if it respect the expected format,
+				else if (serverMsg.matches("[a-z]{3}\\s[\\p{Alnum}\\p{Punct}]{1,50}\\s?.{0,1000}")) {
 					String[] elements = serverMsg.split(" ", 3);	// separate the three elements of the message,
 					
 					if (elements[0].equals("new")) {				// "new" action -> a new user joind the channel,
@@ -49,7 +85,7 @@ public class ServerWorker implements Runnable {
 					}
 				}
 			}
-			catch (IOException exc) {								// If there is a problem at any point, close everything and report.
+			catch (IOException | ClassNotFoundException exc) {		// If there is a problem at any point, close everything and report.
 				this.isRunning = false;
 				
 				if (!this.client.getInternals().getClientSocket().isClosed()) {

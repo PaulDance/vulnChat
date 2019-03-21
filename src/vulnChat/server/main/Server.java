@@ -55,6 +55,13 @@ public class Server {
 		this.console = new Console("vulnChat Server Console", 20, 90);			// and construct a server console.
 		this.settings = settings;
 		
+		if (this.settings.objTransmit.getValue()) {
+			this.console.setTitle("[Serialized] " + this.console.getTitle());
+		}
+		else {
+			this.console.setTitle("[Textual] " + this.console.getTitle());
+		}
+		
 		this.console.addWindowListener(new WindowListener() {
 			@Override public void windowClosing(WindowEvent e) {
 				try {

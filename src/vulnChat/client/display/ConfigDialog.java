@@ -93,7 +93,7 @@ public class ConfigDialog extends JFrame {
 			public void actionPerformed(ActionEvent event) {
 				if (event.getActionCommand().equals("ok")) {
 					final String ip = srvIPfield.getText().trim(), port = srvPortField.getText().trim(), nickname = nicknameField.getText().trim();
-					if (ip.matches("^[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}$") && port.matches("[0-9]+")) {
+					if (ip.matches("^[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}$") && port.matches("[0-9]+") && nickname.matches("\\p{Print}+")) {
 						try {
 							client.setChatterName(nickname);
 							client.connectTo(ip, Integer.parseInt(port));

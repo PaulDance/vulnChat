@@ -120,9 +120,17 @@ public class Client {
 	 * @throws IOException
 	 */
 	public final void stop() throws IOException {
-		this.internals.getToServerObjectStream().flush();
-		this.internals.getToServerObjectStream().close();
-		this.internals.getFromServerObjectStream().close();
+		if (this.settings.objTransmit.getValue()) {
+			this.internals.getFromServerObjectStream().close();
+			this.internals.getToServerObjectStream().flush();
+			this.internals.getToServerObjectStream().close();
+		}
+		else {
+			this.internals.getFromServerTextReader().close();
+			this.internals.getToServerTextWriter().flush();
+			this.internals.getToServerTextWriter().close();
+		}
+		
 		this.internals.getClientSocket().close();
 	}
 	

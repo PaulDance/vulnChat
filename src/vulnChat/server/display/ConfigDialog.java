@@ -54,32 +54,6 @@ public class ConfigDialog extends JFrame {
 		portPanel.add(portField);
 		mainPanel.add(portPanel);												// and then add it to the main panel.
 		
-		final JPanel buttonsPanel = new JPanel();								// Same for buttons.
-		final JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");
-		okButton.setActionCommand("ok");
-		cancelButton.setActionCommand("cancel");
-		
-		ActionListener buttonListen = new ActionListener() {					// Defines an event listener anonymous class instance that will catch
-			@Override public void actionPerformed(ActionEvent event) {			// events related to buttons,it will be used for the ok and cancel buttons here:
-				if (event.getActionCommand().equals("ok")) {					// if ok is clicked,
-					if (portField.getText().matches("^[0-9]+$")) {				// and if the information typed corresponds to a port number,
-						try {													// then start the server.
-							(new Server(Integer.parseInt(portField.getText()), serverSettings)).start();
-						} catch (NumberFormatException | IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-				ConfigDialog.this.stop();										// in any other case, the application closes.
-			}
-		};
-		
-		okButton.addActionListener(buttonListen);
-		cancelButton.addActionListener(buttonListen);
-		buttonsPanel.add(okButton);
-		buttonsPanel.add(cancelButton);
-		mainPanel.add(buttonsPanel);
-		
 		final CheckBoxHolder checksHolder = new CheckBoxHolder();				// The holder easily creating and storing the associated JCheckBox instances.
 		checksHolder.setLayout(new BoxLayout(checksHolder, BoxLayout.PAGE_AXIS));
 		checksHolder.addNew("Refuse a new connection with an already existing nickname", serverSettings.checkNewClientName);
@@ -129,6 +103,32 @@ public class ConfigDialog extends JFrame {
 		txtObJPanel.add(txtChoice);
 		txtObJPanel.add(objChoice);
 		mainPanel.add(txtObJPanel);
+		
+		final JPanel buttonsPanel = new JPanel();								// Same for buttons.
+		final JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");
+		okButton.setActionCommand("ok");
+		cancelButton.setActionCommand("cancel");
+		
+		ActionListener buttonListen = new ActionListener() {					// Defines an event listener anonymous class instance that will catch
+			@Override public void actionPerformed(ActionEvent event) {			// events related to buttons,it will be used for the ok and cancel buttons here:
+				if (event.getActionCommand().equals("ok")) {					// if ok is clicked,
+					if (portField.getText().matches("^[0-9]+$")) {				// and if the information typed corresponds to a port number,
+						try {													// then start the server.
+							(new Server(Integer.parseInt(portField.getText()), serverSettings)).start();
+						} catch (NumberFormatException | IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				ConfigDialog.this.stop();										// in any other case, the application closes.
+			}
+		};
+		
+		okButton.addActionListener(buttonListen);
+		cancelButton.addActionListener(buttonListen);
+		buttonsPanel.add(okButton);
+		buttonsPanel.add(cancelButton);
+		mainPanel.add(buttonsPanel);
 		
 		this.add(mainPanel);													// Finally you connect the main panel which holds everything to the frame.
 		this.setResizable(false);

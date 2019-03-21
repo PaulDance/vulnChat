@@ -90,7 +90,13 @@ public class Client {
 	 * @see Client
 	 */
 	public final void startChatWindow() {
-		this.chatWindow.setTitle(this.chatWindow.getTitle() + ": " + this.chatterName);
+		if (this.settings.objTransmit.getValue()) {
+			this.chatWindow.setTitle("[Serialized] " + this.chatWindow.getTitle() + ": " + this.chatterName);
+		}
+		else {
+			this.chatWindow.setTitle("[Textual] " + this.chatWindow.getTitle() + ": " + this.chatterName);
+		}
+		
 		this.chatWindow.start();
 	}
 	

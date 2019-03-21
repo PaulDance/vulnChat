@@ -27,7 +27,7 @@ import vulnChat.client.main.ServerWorker;
  * for a {@link Client} to set a window title, an IP address and a port number to connect to.
  * 
  * @author Paul Mabileau
- * @version 0.1
+ * @version 0.2
  */
 public class ConfigDialog extends JFrame {
 	private static final long serialVersionUID = 907344703389239762L;
@@ -84,6 +84,8 @@ public class ConfigDialog extends JFrame {
 		txtObJPanel.add(objChoice);
 		mainPanel.add(txtObJPanel);
 		
+		final JLabel errorLabel = new JLabel(" ");
+		
 		final JPanel buttonsPanel = new JPanel();
 		final JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");
 		okButton.setActionCommand("ok");
@@ -93,21 +95,35 @@ public class ConfigDialog extends JFrame {
 			public void actionPerformed(ActionEvent event) {
 				if (event.getActionCommand().equals("ok")) {
 					final String ip = srvIPfield.getText().trim(), port = srvPortField.getText().trim(), nickname = nicknameField.getText().trim();
-					if (ip.matches("^[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}$") && port.matches("[0-9]+") && nickname.matches("\\p{Print}+")) {
-						try {
-							client.setChatterName(nickname);
-							client.connectTo(ip, Integer.parseInt(port));
-							client.setRunning(true);
-							(new Thread(new ServerWorker(client))).start();
-							client.startChatWindow();
-							client.getInternals().getLinePrinter().println(nickname + " joined the channel.");
-							ConfigDialog.this.stop();
-						} catch (ConnectException exc) {					// Check if server is available.
-							client.setRunning(false);
-						} catch (NumberFormatException | IOException e) {
-							e.printStackTrace();
-							ConfigDialog.this.stop();
+					if (ip.matches("^[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}$")) {
+						if (port.matches("[0-9]+")) {
+							if (nickname.matches("\\p{Print}+")) {
+								try {
+									client.setChatterName(nickname);
+									client.connectTo(ip, Integer.parseInt(port));
+									client.setRunning(true);
+									(new Thread(new ServerWorker(client))).start();
+									client.startChatWindow();
+									client.getInternals().getLinePrinter().println(nickname + " joined the channel.");
+									ConfigDialog.this.stop();
+								} catch (ConnectException exc) {					// Check if server is available.
+									client.setRunning(false);
+									errorLabel.setText("Server seems unavailable");
+								} catch (NumberFormatException | IOException e) {
+									e.printStackTrace();
+									ConfigDialog.this.stop();
+								}
+							}
+							else {
+								errorLabel.setText("Nickname is empty");
+							}
 						}
+						else {
+							errorLabel.setText("Port number is digits only");
+						}
+					}
+					else {
+						errorLabel.setText("Wrong IP format");
 					}
 				}
 				else {
@@ -121,6 +137,10 @@ public class ConfigDialog extends JFrame {
 		buttonsPanel.add(okButton);
 		buttonsPanel.add(cancelButton);
 		mainPanel.add(buttonsPanel);
+		
+		final JPanel errorLabelPanel = new JPanel();
+		errorLabelPanel.add(errorLabel);
+		mainPanel.add(errorLabelPanel);
 		
 		this.add(mainPanel);
 		this.setResizable(false);

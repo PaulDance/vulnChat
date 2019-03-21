@@ -5,6 +5,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.BindException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.BoxLayout;
@@ -104,6 +105,8 @@ public class ConfigDialog extends JFrame {
 		txtObJPanel.add(objChoice);
 		mainPanel.add(txtObJPanel);
 		
+		final JLabel errorLabel = new JLabel(" ");
+		
 		final JPanel buttonsPanel = new JPanel();								// Same for buttons.
 		final JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");
 		okButton.setActionCommand("ok");
@@ -115,12 +118,21 @@ public class ConfigDialog extends JFrame {
 					if (portField.getText().matches("^[0-9]+$")) {				// and if the information typed corresponds to a port number,
 						try {													// then start the server.
 							(new Server(Integer.parseInt(portField.getText()), serverSettings)).start();
+							ConfigDialog.this.stop();
+						} catch (BindException e) {
+							errorLabel.setText("Port seems used");
 						} catch (NumberFormatException | IOException e) {
 							e.printStackTrace();
+							ConfigDialog.this.stop();
 						}
 					}
+					else {
+						errorLabel.setText("Port number is digits only");
+					}
 				}
-				ConfigDialog.this.stop();										// in any other case, the application closes.
+				else {
+					ConfigDialog.this.stop();									// in any other case, the application closes.
+				}
 			}
 		};
 		
@@ -129,6 +141,10 @@ public class ConfigDialog extends JFrame {
 		buttonsPanel.add(okButton);
 		buttonsPanel.add(cancelButton);
 		mainPanel.add(buttonsPanel);
+		
+		final JPanel errorLabelPanel = new JPanel();
+		errorLabelPanel.add(errorLabel);
+		mainPanel.add(errorLabelPanel);
 		
 		this.add(mainPanel);													// Finally you connect the main panel which holds everything to the frame.
 		this.setResizable(false);

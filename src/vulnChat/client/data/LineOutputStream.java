@@ -5,8 +5,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import vulnChat.client.display.InOutConsole;
-
 
 /**
  * This {@code abstract} class, extending {@link OutputStream}, enables the same principle, but instead
@@ -14,11 +12,16 @@ import vulnChat.client.display.InOutConsole;
  * it is given line by line to the {@code public void write(String line)} method. This is achieved internally
  * by overriding the {@code write(int b)} method and record in an {@link ArrayList} the characters
  * received until a newline occurs. In this case, the {@code write(String line)} method is called on the line
- * obtained by concatenating the previous characters together into a {@code String}.
+ * obtained by concatenating the previous characters together into a {@code String}. <br><br>
+ * 
+ * This class is now no longer used by the project, as receiving strings byte by byte disabled the use of
+ * non-ASCII characters, which is a shame for accents and such, especially because cutting them up isn't
+ * necessary for transmitting over the network. A much simpler way of achieving the functionality is by
+ * using another custom class called {@link vulnChat.data.LinePrinter LinePrinter}.
  * 
  * @author Paul Mabileau
- * @version 0.1
- * @see InOutConsole
+ * @version 0.2
+ * @deprecated
  */
 public abstract class LineOutputStream extends OutputStream {
 	private final ArrayList<String> charBuffer;

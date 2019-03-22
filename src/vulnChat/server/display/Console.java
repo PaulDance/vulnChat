@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JFrame;
@@ -22,7 +21,7 @@ import vulnChat.data.LinePrinter;
  * @see JFrame
  * @see JTextArea
  * @author Paul Mabileau
- * @version 0.1
+ * @version 0.2
  */
 public class Console extends JFrame {
 	private static final long serialVersionUID = -5480714930071858422L;
@@ -33,9 +32,8 @@ public class Console extends JFrame {
 	
 	/**
 	 * Initializes a Console object with "Console" as a title, 20 rows and 90 columns.
-	 * @throws UnsupportedEncodingException 
 	 */
-	public Console() throws UnsupportedEncodingException {
+	public Console() {
 		this("Console", 20, 90);
 	}
 	
@@ -45,13 +43,12 @@ public class Console extends JFrame {
 	 * @param title The window title
 	 * @param rows The number of character rows for the window's text area format
 	 * @param columns The number of character columns for the window's text area format
-	 * @throws UnsupportedEncodingException 
 	 */
-	public Console(String title, int rows, int columns) throws UnsupportedEncodingException {
+	public Console(String title, int rows, int columns) {
 		super(title);																// Parent constructor initializes the frame titled <title>.
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);						// Sets the behavior of the window to kill itself when closed (when cross button clicked).
 		
-		final JTextArea printArea = new JTextArea(rows, columns);							// Print area settings with (<rows>, <columns>) format,
+		final JTextArea printArea = new JTextArea(rows, columns);					// Print area settings with (<rows>, <columns>) format,
 		printArea.setBackground(Color.BLACK);										// black background color,
 		printArea.setForeground(Color.LIGHT_GRAY);									// light gray color,
 		printArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 17));				// monospaced 17pts font,
@@ -59,7 +56,7 @@ public class Console extends JFrame {
 		printArea.setLineWrap(true);												// line breaks automatically added when the line is too long for the window,
 		printArea.setEditable(false);												// and is not editable: it is meant to be just a console, so no input.
 		
-		this.linePrinter = new LinePrinter() {
+		this.linePrinter = new LinePrinter() {										// Enable output to caller.
 			@Override public void println(String text) {
 				this.print(text + "\n");
 			}

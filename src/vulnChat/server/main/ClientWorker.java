@@ -66,15 +66,15 @@ public class ClientWorker implements Runnable {
 		}
 		
 		while (this.server.isRunning() && this.isRunning) {					// In a loop while authorized to,
-			try {
-				if (server.getSettings().objTransmit.getValue()) {
+			try {															// wait for a message from the client;
+				if (server.getSettings().objTransmit.getValue()) {			// If object is expected,
 					do {
-						try {
+						try {												// try to read it,
 							clientAction = (Action) objInFromConnect.readObject();
 						} catch (EOFException exc) {
 							try {
 								clientAction = null;
-								Thread.sleep(10);
+								Thread.sleep(10);							// wait if stream is empty;
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
@@ -82,29 +82,29 @@ public class ClientWorker implements Runnable {
 					} while (clientAction == null);
 				}
 				else {
-					do {
-						clientMsg = txtInFromConnect.readLine();			// wait for a message from the client;
+					do {													// otherwise wait for string.
+						clientMsg = txtInFromConnect.readLine();
 					} while (clientMsg == null);
 				}
 				
-				if (!this.server.getSettings().objTransmit.getValue()) {
-					if (clientMsg != null) {
+				if (!this.server.getSettings().objTransmit.getValue()) {	// If string was received,
+					if (clientMsg != null) {								// and it is non null, report about it;
 						this.server.getLinePrinter().println(this.commSocket.getInetAddress() + ", " + this.commSocket.getPort() + ": " + clientMsg);
 					}
-					else {
+					else {													// else stop the connection;
 						this.server.getLinePrinter().println("connection ended to: " + this.commSocket.getInetAddress());
 						this.kick(txtInFromConnect, txtOutToConnect, objInFromConnect, objOutToConnect);
 						return;
 					}
 				}
 				else {
-					if (clientAction != null) {
+					if (clientAction != null) {								// otherwise, if action object is non null, report about it.
 						this.server.getLinePrinter().println(this.commSocket.getInetAddress() + ", " + this.commSocket.getPort() + ": " + clientAction.toString());
 					}
 				}
 				
-				if (this.server.getSettings().objTransmit.getValue()) {
-					clientMsg = clientAction.toString();
+				if (this.server.getSettings().objTransmit.getValue()) {		// If object was received,
+					clientMsg = clientAction.toString();					// transform it to string to avoid duplicating tests.
 				}
 				
 				if (clientMsg.matches("[a-z]{3}\\s[\\p{Alnum}\\p{Punct}]{1,50}\\s?.{0,1000}")) {
@@ -154,10 +154,11 @@ public class ClientWorker implements Runnable {
 					this.kickIfOn(txtInFromConnect, txtOutToConnect, objInFromConnect, objOutToConnect);		// and kick if activated by the server.
 				}
 			}
-			catch (IOException | ClassNotFoundException e) {
-				this.isRunning = false;
+			catch (ClassNotFoundException e) {}								// If unknown class received, ignore;
+			catch (IOException e) {											// In case of major problem,
+				this.isRunning = false;										// stop everything
 				
-				if (!this.commSocket.isClosed()) {
+				if (!this.commSocket.isClosed()) {							// and report.
 					this.server.getLinePrinter().println("Read failed");
 					e.printStackTrace();
 				}
@@ -197,7 +198,7 @@ public class ClientWorker implements Runnable {
 	 */
 	private final void distributeAction(final Action action) throws IOException {
 		for (String client: this.server.getClientsMap().keySet()) {				// For all the clients of the server,
-			if (!client.equals(action.chatterName)) {										// except the <sender>,
+			if (!client.equals(action.chatterName)) {							// except the <sender>,
 				this.server.getClientsMap().get(client).objOut.writeObject(action);
 				this.server.getLinePrinter().println(action.toString() + " --> " + client);	// and report that on the server's console.
 			}

@@ -22,9 +22,11 @@ import vulnChat.data.New;
  * When this is done, it then opens a window that enables the user to send messages to all the other
  * clients connected to the server and receive from them too.</p><br>
  * <p>For now there are also a few other minor functionalities associated to the chat: user joined and user
- * left the channel messages when it happens. The vulnerability level management is yet to come.
+ * left the channel messages when it happens. The vulnerability level management has progressed since the
+ * beginning, adding partial identity verification, kicking upon forbidden actions and serialized communication.
+ * 
  * @author Paul Mabileau
- * @version 0.1
+ * @version 0.3
  * @see ConfigDialog
  * @see ChatWindow
  * @see Server
@@ -34,24 +36,25 @@ public class Client {
 	private ClientInternals internals;
 	private boolean isRunning = false;
 	private final ConfigDialog configDialog;
+	/**
+	 * The {@link Settings} object of this client, which records the current configuration.
+	 */
 	public final Settings settings;
 	private final ChatWindow chatWindow;
 	
 	/**
 	 * A {@link Client} instance is executable by Java. This starts a new client.
 	 * @param args The array of {@link String} of calling arguments
-	 * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		(new Client()).start();
 	}
 	
 	/**
 	 * Builds the internal elements of a {@link Client} object: a {@link ClientInternals} instance,
 	 * a {@link ConfigDialog} and a {@link ChatWindow}.
-	 * @throws IOException
 	 */
-	public Client() throws IOException {
+	public Client() {
 		this.settings = new Settings();
 		this.internals = new ClientInternals();
 		this.configDialog = new ConfigDialog(this, "Configuration", "127.0.0.1", "4321");
@@ -66,7 +69,7 @@ public class Client {
 	}
 	
 	/**
-	 * Sets up the {@link Client} to connect to a new chat server.
+	 * Sets up the {@link Client} to connect to a new chat server, with respect to the current configuration.
 	 * @param ipAddr The IP address as a {@link String} to connect to 
 	 * @param port The port number of the server
 	 * @throws IOException
@@ -75,7 +78,7 @@ public class Client {
 		this.internals.setClientSocket(new Socket(ipAddr, port));
 		this.internals.getClientSocket().setKeepAlive(true);
 		
-		if (this.settings.objTransmit.getValue()) {
+		if (this.settings.objTransmit.getValue()) {		// Respect the current configuration.
 			this.internals.setToServerObjectStream(new ObjectOutputStream(this.internals.getClientSocket().getOutputStream()));
 			this.internals.setFromServerObjectStream(new ObjectInputStream(this.internals.getClientSocket().getInputStream()));
 		} else {
@@ -90,7 +93,7 @@ public class Client {
 	 * @see Client
 	 */
 	public final void startChatWindow() {
-		if (this.settings.objTransmit.getValue()) {
+		if (this.settings.objTransmit.getValue()) {		// Respect the current configuration to add customized information in the title bar.
 			this.chatWindow.setTitle("[Serialized] " + this.chatWindow.getTitle() + ": " + this.chatterName);
 		}
 		else {
@@ -120,7 +123,7 @@ public class Client {
 	 * @throws IOException
 	 */
 	public final void stop() throws IOException {
-		if (this.settings.objTransmit.getValue()) {
+		if (this.settings.objTransmit.getValue()) {		// Respect the current configuration.
 			this.internals.getFromServerObjectStream().close();
 			this.internals.getToServerObjectStream().flush();
 			this.internals.getToServerObjectStream().close();
@@ -148,7 +151,7 @@ public class Client {
 	 * @throws IOException
 	 */
 	public void sendToServer(Action action) throws IOException {
-		if (this.settings.objTransmit.getValue()) {
+		if (this.settings.objTransmit.getValue()) {		// Respect the current configuration.
 			this.internals.getToServerObjectStream().writeObject(action);
 			this.internals.getToServerObjectStream().flush();
 		}

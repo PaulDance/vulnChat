@@ -27,7 +27,7 @@ import vulnChat.client.main.ServerWorker;
  * for a {@link Client} to set a window title, an IP address and a port number to connect to.
  * 
  * @author Paul Mabileau
- * @version 0.2
+ * @version 0.3
  */
 public class ConfigDialog extends JFrame {
 	private static final long serialVersionUID = 907344703389239762L;
@@ -84,16 +84,16 @@ public class ConfigDialog extends JFrame {
 		txtObJPanel.add(objChoice);
 		mainPanel.add(txtObJPanel);
 		
-		final JLabel errorLabel = new JLabel(" ");
+		final JLabel errorLabel = new JLabel(" ");									// The label used to report input mistakes.
 		
 		final JPanel buttonsPanel = new JPanel();
 		final JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");
 		okButton.setActionCommand("ok");
 		cancelButton.setActionCommand("cancel");
 		
-		final ActionListener cmdListen = new ActionListener() {					// Detects user clicks on the 'OK' button or the 'Cancel' button.
+		final ActionListener cmdListen = new ActionListener() {						// Detects user clicks on the 'OK' button or the 'Cancel' button.
 			public void actionPerformed(ActionEvent event) {
-				if (event.getActionCommand().equals("ok")) {
+				if (event.getActionCommand().equals("ok")) {						// If ok is pressed, check the fields and start the client:
 					final String ip = srvIPfield.getText().trim(), port = srvPortField.getText().trim(), nickname = nicknameField.getText().trim();
 					if (ip.matches("^[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}$")) {
 						if (port.matches("[0-9]+")) {
@@ -106,28 +106,28 @@ public class ConfigDialog extends JFrame {
 									client.startChatWindow();
 									client.getInternals().getLinePrinter().println(nickname + " joined the channel.");
 									ConfigDialog.this.stop();
-								} catch (ConnectException exc) {					// Check if server is available.
-									client.setRunning(false);
-									errorLabel.setText("Server seems unavailable");
-								} catch (NumberFormatException | IOException e) {
-									e.printStackTrace();
-									ConfigDialog.this.stop();
+								} catch (ConnectException exc) {					// If server is unavailable,
+									client.setRunning(false);						// cancel the starting,
+									errorLabel.setText("Server seems unavailable");	// and inform the user;
+								} catch (NumberFormatException | IOException e) {	// If major incident,
+									e.printStackTrace();							// report to the system console,
+									ConfigDialog.this.stop();						// and stop everything.
 								}
 							}
-							else {
-								errorLabel.setText("Nickname is empty");
+							else {													// If the nickname is empty or contains weird characters,
+								errorLabel.setText("Nickname is empty");			// tell the user;
 							}
 						}
-						else {
-							errorLabel.setText("Port number is digits only");
+						else {														// If the port field is empty or contains non-digit characters,
+							errorLabel.setText("Port number is digits only");		// tell the user;
 						}
 					}
-					else {
-						errorLabel.setText("Wrong IP format");
+					else {															// If the IP address field does not have a correctly formated IP,
+						errorLabel.setText("Wrong IP format");						// tell the user.
 					}
 				}
-				else {
-					ConfigDialog.this.stop();
+				else {																// If cancel button is pressed,
+					ConfigDialog.this.stop();										// stop everything and close.
 				}
 			}
 		};

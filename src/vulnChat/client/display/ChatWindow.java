@@ -15,7 +15,7 @@ import vulnChat.data.Say;
  * in an online chat application. Must be used by a {@link Client} object.
  * 
  * @author Paul Mabileau
- * @version 0.1
+ * @version 0.2
  */
 public class ChatWindow extends InOutConsole {
 	private static final long serialVersionUID = -3281596045921734919L;
@@ -26,15 +26,14 @@ public class ChatWindow extends InOutConsole {
 	 * 
 	 * @param client The calling {@link Client} instance
 	 * @param title The window's title as a {@link String}.
-	 * @throws IOException 
 	 */
-	public ChatWindow(Client client, String title) throws IOException {
-		super(title, new LinePrinter() {					// Behavior specific to a chat window:
+	public ChatWindow(Client client, String title) {
+		super(title, new LinePrinter() {							// Behavior specific to a chat window:
 			@Override public void println(String line) {
 				this.print(line);
 			}
 			
-			@Override public void print(String line) {		// when receiving a line of text from the user, display it and send it;
+			@Override public void print(String line) {				// when receiving a line of text from the user, display it and send it;
 				client.getInternals().getLinePrinter().println(client.getChatterName() + ": " + line);
 				try {
 					client.sendToServer(new Say(client.getChatterName(), line));
@@ -44,11 +43,11 @@ public class ChatWindow extends InOutConsole {
 			}
 		});
 		
-		client.getInternals().setLinePrinter(this.inputPrinter);					// give to the client object the stream to this window;
+		client.getInternals().setLinePrinter(this.inputPrinter);	// give to the client object the printer to this window;
 		this.setCharLimit(1000);
 		
-		this.addWindowListener(new WindowListener() {							// also, there is communication needed upon closing the window:
-			public void windowClosing(WindowEvent event) {						// send to the server an end connection message.
+		this.addWindowListener(new WindowListener() {				// also, there is communication needed upon closing the window:
+			public void windowClosing(WindowEvent event) {			// send to the server an end connection message.
 				try {
 					client.sendToServer(new Bye(client.getChatterName()));
 					client.stop();

@@ -1,15 +1,13 @@
 package vulnChat.data;
 
-import vulnChat.server.data.CheckBoxHolder;
-import vulnChat.server.data.Settings;
 
 /**
  * A mutable wrapper around the native boolean type, that is to say a class which
  * defines object having a single attribute: a boolean, and that this boolean can
  * be later retrieved or modified.
  * 
- * @see Settings
- * @see CheckBoxHolder
+ * @see vulnChat.server.data.Settings Settings
+ * @see vulnChat.server.data.CheckBoxHolder CheckBoxHolder
  * @author Paul Mabileau
  * @version 0.1
  */

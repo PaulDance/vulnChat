@@ -26,11 +26,12 @@ import vulnChat.server.main.Server;
 /**
  * Starts and displays the server's configuration dialog on startup, enabling the modification
  * of the port the server will start on and its difficulty settings.
+ * 
  * @see Settings
  * @see JFrame
  * @see Server
  * @author Paul Mabileau
- * @version 0.2
+ * @version 0.3
 */
 public class ConfigDialog extends JFrame {
 	private static final long serialVersionUID = 226780886731769923L;
@@ -51,7 +52,7 @@ public class ConfigDialog extends JFrame {
 		
 		final JPanel portPanel = new JPanel();									// so you create a panel,
 		final JTextField portField = new JTextField(defaultPort, 6);
-		portPanel.add(new JLabel("Server Port", SwingConstants.CENTER));			// add widgets to it
+		portPanel.add(new JLabel("Server Port", SwingConstants.CENTER));		// add widgets to it
 		portPanel.add(portField);
 		mainPanel.add(portPanel);												// and then add it to the main panel.
 		
@@ -87,7 +88,7 @@ public class ConfigDialog extends JFrame {
 		
 		final JPanel txtObJPanel = new JPanel();
 		txtObJPanel.setLayout(new BoxLayout(txtObJPanel, BoxLayout.PAGE_AXIS));
-		final ButtonGroup txtObjGroup = new ButtonGroup();
+		final ButtonGroup txtObjGroup = new ButtonGroup();						// Choose between raw text and serialized communication.
 		final JRadioButton txtChoice = new JRadioButton("Use fully clear text communication", true);
 		final JRadioButton objChoice = new JRadioButton("Use serialized communication", false);
 		
@@ -105,9 +106,9 @@ public class ConfigDialog extends JFrame {
 		txtObJPanel.add(objChoice);
 		mainPanel.add(txtObJPanel);
 		
-		final JLabel errorLabel = new JLabel(" ");
+		final JLabel errorLabel = new JLabel(" ");								// The label used for reporting input mistakes or connection errors to the user.
 		
-		final JPanel buttonsPanel = new JPanel();								// Same for buttons.
+		final JPanel buttonsPanel = new JPanel();
 		final JButton okButton = new JButton("OK"), cancelButton = new JButton("Cancel");
 		okButton.setActionCommand("ok");
 		cancelButton.setActionCommand("cancel");
@@ -119,19 +120,19 @@ public class ConfigDialog extends JFrame {
 						try {													// then start the server.
 							(new Server(Integer.parseInt(portField.getText()), serverSettings)).start();
 							ConfigDialog.this.stop();
-						} catch (BindException e) {
-							errorLabel.setText("Port seems used");
-						} catch (NumberFormatException | IOException e) {
-							e.printStackTrace();
-							ConfigDialog.this.stop();
+						} catch (BindException e) {								// If the server socket could not bind the port to itself,
+							errorLabel.setText("Port seems used");				// inform the user;
+						} catch (NumberFormatException | IOException e) {		// in case of major problem,
+							e.printStackTrace();								// report to the system console
+							ConfigDialog.this.stop();							// and stop everything.
 						}
 					}
-					else {
-						errorLabel.setText("Port number is digits only");
+					else {														// If port number is not in the correct format,
+						errorLabel.setText("Port number is digits only");		// report to the user.
 					}
 				}
 				else {
-					ConfigDialog.this.stop();									// in any other case, the application closes.
+					ConfigDialog.this.stop();									// In any other case, the application closes.
 				}
 			}
 		};

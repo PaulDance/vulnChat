@@ -19,11 +19,12 @@ import vulnChat.server.display.Console;
  * This class starts and manages a vulnerable chat messaging server. It starts by opening a configuration
  * dialog to ask the user for the port to start listening on. Then, it will display information about the
  * current connections, chat messages, input, output, transmissions, etc... on a small white-on-black console.
+ * 
  * @see Console
  * @see vulnChat.client.main.Client Client
  * @see Settings
  * @author Paul Mabileau
- * @version 0.1
+ * @version 0.2
  */
 public class Server {
 	private final ServerSocket connSocket;

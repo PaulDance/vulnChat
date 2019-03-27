@@ -57,6 +57,7 @@ public class ConfigDialog extends JFrame {
 		mainPanel.add(portPanel);												// and then add it to the main panel.
 		
 		final CheckBoxHolder checksHolder = new CheckBoxHolder();				// The holder easily creating and storing the associated JCheckBox instances.
+		checksHolder.setAlignmentX(CENTER_ALIGNMENT);
 		checksHolder.setLayout(new BoxLayout(checksHolder, BoxLayout.PAGE_AXIS));
 		checksHolder.addNew("Refuse a new connection with an already existing nickname", serverSettings.checkNewClientName);
 		checksHolder.addNew("Check the client's IP address and port number", serverSettings.checkClientIPAndPort);
@@ -87,6 +88,7 @@ public class ConfigDialog extends JFrame {
 		mainPanel.add(selectionButtonsPanel);
 		
 		final JPanel txtObJPanel = new JPanel();
+		txtObJPanel.setAlignmentX(CENTER_ALIGNMENT);
 		txtObJPanel.setLayout(new BoxLayout(txtObJPanel, BoxLayout.PAGE_AXIS));
 		final ButtonGroup txtObjGroup = new ButtonGroup();						// Choose between raw text and serialized communication.
 		final JRadioButton txtChoice = new JRadioButton("Use fully clear text communication", true);
@@ -128,7 +130,7 @@ public class ConfigDialog extends JFrame {
 						}
 					}
 					else {														// If port number is not in the correct format,
-						errorLabel.setText("Port number is digits only");		// report to the user.
+						errorLabel.setText("Port number must be digits only");	// report to the user.
 					}
 				}
 				else {

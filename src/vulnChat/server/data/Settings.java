@@ -22,5 +22,8 @@ public class Settings {
 	public final MutableBoolean	checkNewClientName 		=	new MutableBoolean(false),
 								checkClientIPAndPort	=	new MutableBoolean(false),
 								kickOnHack				=	new MutableBoolean(false),
-								objTransmit				=	new MutableBoolean(false);
+								objTransmit				=	new MutableBoolean(false),
+								checkTxtLimit			=	new MutableBoolean(false),		// TODO: implement text size limit
+								checkTwoNews			=	new MutableBoolean(false),		// TODO: add two new actions check
+								delKickedClient			=	new MutableBoolean(false);		// TODO: make delete kicked client option rule
 }

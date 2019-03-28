@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,6 +19,7 @@ import javax.swing.JRadioButton;
 
 import vulnChat.data.LabelFieldHolder;
 import vulnChat.server.data.CheckBoxHolder;
+import vulnChat.server.data.CheckBoxHolder.CheckBoxListener;
 import vulnChat.server.data.Settings;
 import vulnChat.server.main.Server;
 
@@ -49,10 +51,15 @@ public class ConfigDialog extends JFrame {
 		final JPanel mainPanel = new JPanel();									// A panel is a way to structure the widgets with a logical tree formation,
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 		
-		final LabelFieldHolder labelFieldHolder = new LabelFieldHolder()		// so you create a panel,
+		final LabelFieldHolder portFieldHolder = new LabelFieldHolder()			// so you create a panel,
 				.addLine("Server Port Number", defaultPort, "port", 5, 50)		// add widgets to it
 		;
-		mainPanel.add(labelFieldHolder);										// and then add it to the main panel.
+		mainPanel.add(portFieldHolder);											// and then add it to the main panel.
+		
+		final LabelFieldHolder txtLimitFieldHolder = new LabelFieldHolder();
+		txtLimitFieldHolder.addLine("Maximum text length", Integer.toString(serverSettings.txtLimit.getValue()), "txtLimit", 5, 50);
+		txtLimitFieldHolder.setVisible(serverSettings.checkTxtLimit.getValue());
+		txtLimitFieldHolder.setAlignmentX(LEFT_ALIGNMENT);						// Weirdly inverted...
 		
 		final CheckBoxHolder checksHolder = new CheckBoxHolder();				// The holder easily creating and storing the associated JCheckBox instances.
 		checksHolder.setAlignmentX(CENTER_ALIGNMENT);
@@ -60,6 +67,13 @@ public class ConfigDialog extends JFrame {
 		checksHolder.addNew("Refuse a new connection with an already existing nickname", serverSettings.checkNewClientName);
 		checksHolder.addNew("Check the client's IP address and port number", serverSettings.checkClientIPAndPort);
 		checksHolder.addNew("Kick a connected client on hack attempt", serverSettings.kickOnHack);
+		checksHolder.addNew("Limit the message length", serverSettings.checkTxtLimit, new CheckBoxListener() {
+			@Override public void onClick(JCheckBox checkBox) {
+				txtLimitFieldHolder.setVisible(checkBox.isSelected());
+				serverSettings.checkTxtLimit.setValue(checkBox.isSelected());
+				ConfigDialog.this.pack();
+			}
+		}, txtLimitFieldHolder);
 		checksHolder.createItemListener();
 		mainPanel.add(checksHolder);
 		
@@ -116,15 +130,23 @@ public class ConfigDialog extends JFrame {
 		ActionListener buttonListen = new ActionListener() {					// Defines an event listener anonymous class instance that will catch
 			@Override public void actionPerformed(ActionEvent event) {			// events related to buttons,it will be used for the ok and cancel buttons here:
 				if (event.getActionCommand().equals("ok")) {					// if ok is clicked,
-					if (labelFieldHolder.getField("port").getText().matches("^[0-9]+$")) {	// and if the information typed corresponds to a port number,
-						try {													// then start the server.
-							(new Server(Integer.parseInt(labelFieldHolder.getField("port").getText()), serverSettings)).start();
-							ConfigDialog.this.stop();
-						} catch (BindException e) {								// If the server socket could not bind the port to itself,
-							errorLabel.setText("Port seems used");				// inform the user;
-						} catch (NumberFormatException | IOException e) {		// in case of major problem,
-							e.printStackTrace();								// report to the system console
-							ConfigDialog.this.stop();							// and stop everything.
+					if (portFieldHolder.getField("port").getText().matches("^[0-9]+$")) {	// and if the information typed are correct,
+						if (txtLimitFieldHolder.getField("txtLimit").getText().matches("^[0-9]+$")) {
+							try {												// then start the server.
+								if (serverSettings.checkTxtLimit.getValue()) {
+									serverSettings.txtLimit.setValue(Integer.parseInt(txtLimitFieldHolder.getField("txtLimit").getText()));
+								}
+								(new Server(Integer.parseInt(portFieldHolder.getField("port").getText()), serverSettings)).start();
+								ConfigDialog.this.stop();
+							} catch (BindException e) {							// If the server socket could not bind the port to itself,
+								errorLabel.setText("Port seems used");			// inform the user;
+							} catch (NumberFormatException | IOException e) {	// in case of major problem,
+								e.printStackTrace();							// report to the system console
+								ConfigDialog.this.stop();						// and stop everything.
+							}
+						}
+						else {
+							errorLabel.setText("Message length limit must be digits only");
 						}
 					}
 					else {														// If port number is not in the correct format,

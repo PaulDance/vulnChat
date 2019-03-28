@@ -83,7 +83,11 @@ public class ClientWorker implements Runnable {
 				}
 				else {
 					do {													// otherwise wait for string.
-						clientMsg = txtInFromConnect.readLine();
+						if (server.getSettings().checkTxtLimit.getValue()) {
+							clientMsg = txtInFromConnect.readLine().substring(0, server.getSettings().txtLimit.getValue() - 1);
+						} else {
+							clientMsg = txtInFromConnect.readLine();
+						}
 					} while (clientMsg == null);
 				}
 				

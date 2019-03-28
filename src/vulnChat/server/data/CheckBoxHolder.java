@@ -6,7 +6,9 @@ import java.util.ArrayList;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
+import vulnChat.data.LabelFieldHolder;
 import vulnChat.data.MutableBoolean;
 
 
@@ -32,23 +34,26 @@ public class CheckBoxHolder extends JPanel {
 	private final ArrayList<OptionEntry> entries;
 	
 	/**
-	 * Defines a tuple containing three references:
+	 * Defines a tuple containing four references:
+	 * 
 	 *<ul>
 	 *		<li>a check box label as a {@link String}</li>
 	 *		<li>a {@link MutableBoolean} server setting</li>
-	 *		<li>and a {@link JCheckBox} built using the last two objects</li>
+	 *		<li>a {@link JCheckBox} built using the last two objects</li>
+	 *		<li>and a {@link CheckBoxListener} that is activated upon clicking the check box</li>
 	 * </ul>
 	 * 
 	 * It is used by the {@link CheckBoxHolder} class in order to store the entries got
 	 * from the template creator in an {@link ArrayList} and manage them at a later time.
 	 * 
 	 * @author Paul Mabileau
-	 * @version 0.1
+	 * @version 0.2
 	 */
 	private final class OptionEntry {
 		public final String label;
 		public final MutableBoolean setting;
 		public final JCheckBox checkBox;
+		private final CheckBoxListener listener;
 		
 		/**
 		 * Saves the given parameters, builds the {@link JCheckBox} obtained from them and saves it also.
@@ -58,11 +63,34 @@ public class CheckBoxHolder extends JPanel {
 		 * @see OptionEntry
 		 * @see CheckBoxHolder
 		 */
-		public OptionEntry(String label, MutableBoolean setting) {
+		public OptionEntry(String label, MutableBoolean setting, CheckBoxListener listener) {
 			this.label = label;
 			this.setting = setting;
 			this.checkBox = new JCheckBox(label, setting.getValue());
+			this.listener = listener;
 		}
+		
+		public void activateListener() {
+			if (this.listener != null) {
+				this.listener.onClick(this.checkBox);
+			}
+		}
+	}
+	
+	/**
+	 * Defines a way for the caller of {@link CheckBoxHolder} to add custom behavior when a check box
+	 * which is registered in the holder is clicked by the end user. This interface provides one method:
+	 * {@link #onClick(JCheckBox)} which is called upon clicking the check box.
+	 * 
+	 * @author Paul Mabileau
+	 * @version 0.1
+	 */
+	public interface CheckBoxListener {
+		/**
+		 * Defines the behavior to follow when the given check box is clicked by the user.
+		 * @param checkBox The {@link JCheckBox} that generated the click event. Use it to get its current state.
+		 */
+		public void onClick(JCheckBox checkBox);
 	}
 	
 	/**
@@ -84,9 +112,43 @@ public class CheckBoxHolder extends JPanel {
 	 * @see CheckBoxHolder
 	 */
 	public void addNew(String label, MutableBoolean setting) {
-		final OptionEntry entry = new OptionEntry(label, setting);
+		this.addNew(label, setting, null, null);
+	}
+	
+	/**
+	 * Adds a entry to the inner storage, builds a JCheckBox from it and adds it to the current panel.
+	 * It also registers the given listener to the option entry.
+	 * 
+	 * @param label The {@link String} that will the check box' label text
+	 * @param setting The {@link MutableBoolean} server setting associated with the label
+	 * @param listener The {@link CheckBoxListener} that will be activated on state change
+	 * @see OptionEntry
+	 * @see CheckBoxHolder
+	 */
+	public void addNew(String label, MutableBoolean setting, CheckBoxListener listener) {
+		this.addNew(label, setting, listener, null);
+	}
+	
+	/**
+	 * Adds a entry to the inner storage, builds a JCheckBox from it and adds it to the current panel.
+	 * It also registers the given listener to the option entry and adds the given label-field holder
+	 * to the panel so that it will appear below the check box.
+	 * 
+	 * @param label The {@link String} that will the check box' label text
+	 * @param setting The {@link MutableBoolean} server setting associated with the label
+	 * @param listener The {@link CheckBoxListener} that will be activated on state change
+	 * @param holder The {@link LabelFieldHolder} to be put right below the check box
+	 * @see OptionEntry
+	 * @see CheckBoxHolder
+	 */
+	public void addNew(String label, MutableBoolean setting, CheckBoxListener listener, LabelFieldHolder holder) {
+		final OptionEntry entry = new OptionEntry(label, setting, listener);
 		this.entries.add(entry);
 		this.add(entry.checkBox);
+		
+		if (holder != null) {
+			this.add(holder, SwingConstants.SOUTH_EAST);
+		}
 	}
 	
 	/**
@@ -136,6 +198,7 @@ public class CheckBoxHolder extends JPanel {
 		for (OptionEntry entry: this.entries) {
 			if (source == entry.checkBox) {
 				entry.setting.setValue(entry.checkBox.isSelected());
+				entry.activateListener();
 			}
 		}
 	}
@@ -148,6 +211,7 @@ public class CheckBoxHolder extends JPanel {
 	public void syncAll() {
 		for (OptionEntry entry: this.entries) {
 			entry.setting.setValue(entry.checkBox.isSelected());
+			entry.activateListener();
 		}
 	}
 	

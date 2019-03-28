@@ -15,9 +15,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
+import vulnChat.data.LabelFieldHolder;
 import vulnChat.server.data.CheckBoxHolder;
 import vulnChat.server.data.Settings;
 import vulnChat.server.main.Server;
@@ -50,11 +49,10 @@ public class ConfigDialog extends JFrame {
 		final JPanel mainPanel = new JPanel();									// A panel is a way to structure the widgets with a logical tree formation,
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 		
-		final JPanel portPanel = new JPanel();									// so you create a panel,
-		final JTextField portField = new JTextField(defaultPort, 6);
-		portPanel.add(new JLabel("Server Port", SwingConstants.CENTER));		// add widgets to it
-		portPanel.add(portField);
-		mainPanel.add(portPanel);												// and then add it to the main panel.
+		final LabelFieldHolder labelFieldHolder = new LabelFieldHolder()		// so you create a panel,
+				.addLine("Server Port Number", defaultPort, "port", 5, 50)		// add widgets to it
+		;
+		mainPanel.add(labelFieldHolder);										// and then add it to the main panel.
 		
 		final CheckBoxHolder checksHolder = new CheckBoxHolder();				// The holder easily creating and storing the associated JCheckBox instances.
 		checksHolder.setAlignmentX(CENTER_ALIGNMENT);
@@ -118,9 +116,9 @@ public class ConfigDialog extends JFrame {
 		ActionListener buttonListen = new ActionListener() {					// Defines an event listener anonymous class instance that will catch
 			@Override public void actionPerformed(ActionEvent event) {			// events related to buttons,it will be used for the ok and cancel buttons here:
 				if (event.getActionCommand().equals("ok")) {					// if ok is clicked,
-					if (portField.getText().matches("^[0-9]+$")) {				// and if the information typed corresponds to a port number,
+					if (labelFieldHolder.getField("port").getText().matches("^[0-9]+$")) {	// and if the information typed corresponds to a port number,
 						try {													// then start the server.
-							(new Server(Integer.parseInt(portField.getText()), serverSettings)).start();
+							(new Server(Integer.parseInt(labelFieldHolder.getField("port").getText()), serverSettings)).start();
 							ConfigDialog.this.stop();
 						} catch (BindException e) {								// If the server socket could not bind the port to itself,
 							errorLabel.setText("Port seems used");				// inform the user;

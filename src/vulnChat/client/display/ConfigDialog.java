@@ -10,9 +10,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.ParallelGroup;
-import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,6 +19,7 @@ import javax.swing.JTextField;
 
 import vulnChat.client.main.Client;
 import vulnChat.client.main.ServerWorker;
+import vulnChat.data.LabelFieldHolder;
 
 
 /**
@@ -29,7 +27,7 @@ import vulnChat.client.main.ServerWorker;
  * for a {@link Client} to set a window title, an IP address and a port number to connect to.
  * 
  * @author Paul Mabileau
- * @version 0.3
+ * @version 0.4
  */
 public class ConfigDialog extends JFrame {
 	private static final long serialVersionUID = 907344703389239762L;
@@ -48,56 +46,12 @@ public class ConfigDialog extends JFrame {
 		final JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 		
-		final JPanel labelsFieldsPanel = new JPanel();
-		labelsFieldsPanel.setAlignmentX(CENTER_ALIGNMENT);
-		
-		final GroupLayout labelsFieldsLayout = new GroupLayout(labelsFieldsPanel);	// A more configurable grid layout, thus a bit more complex,
-		labelsFieldsLayout.setAutoCreateGaps(true);									// but enables creating gaps between its components
-		labelsFieldsLayout.setAutoCreateContainerGaps(true);						// and especially between it and its container.
-		
-		final ParallelGroup		labelsGroup		=	labelsFieldsLayout.createParallelGroup(GroupLayout.Alignment.TRAILING);
-		final ParallelGroup		fieldsGroup		=	labelsFieldsLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
-		final SequentialGroup	verticalGroup	=	labelsFieldsLayout.createSequentialGroup();
-		
-		final ParallelGroup srvIPGroup = labelsFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE);
-		final JLabel srvIPlabel = new JLabel("Server IP Address");
-		final JTextField srvIPfield = new JTextField(defaultIP, 15);
-		srvIPfield.setMaximumSize(new Dimension(120, 1));							// Set a max width, otherwise the field is extended to the border;
-		labelsGroup.addComponent(srvIPlabel);										// add the label to the first column, right aligned;
-		fieldsGroup.addComponent(srvIPfield);										// add the label to the second column, left aligned;
-		srvIPGroup.addComponent(srvIPlabel);										// add both the label
-		srvIPGroup.addComponent(srvIPfield);										// and the field to the current line,
-		verticalGroup.addGroup(srvIPGroup);											// which is in turn added in the vertical group.
-		
-		final ParallelGroup srvPortGroup = labelsFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE);
-		final JLabel srvPortLabel = new JLabel("Server Port");						// Same idea here,
-		final JTextField srvPortField = new JTextField(defaultPort, 5);
-		srvPortField.setMaximumSize(new Dimension(50, 1));
-		labelsGroup.addComponent(srvPortLabel);
-		fieldsGroup.addComponent(srvPortField);
-		srvPortGroup.addComponent(srvPortLabel);
-		srvPortGroup.addComponent(srvPortField);
-		verticalGroup.addGroup(srvPortGroup);
-		
-		final ParallelGroup nicknameGroup = labelsFieldsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE);
-		final JLabel nicknameLabel = new JLabel("Nickname");						// and here.
-		final JTextField nicknameField = new JTextField(15);
-		nicknameField.setMaximumSize(new Dimension(130, 1));
-		labelsGroup.addComponent(nicknameLabel);
-		fieldsGroup.addComponent(nicknameField);
-		nicknameGroup.addComponent(nicknameLabel);
-		nicknameGroup.addComponent(nicknameField);
-		verticalGroup.addGroup(nicknameGroup);
-		
-		labelsFieldsLayout.setHorizontalGroup(										// Sets the horizontal group to hold and put the columns in order;
-			labelsFieldsLayout.createSequentialGroup()
-				.addGroup(labelsGroup)
-				.addGroup(fieldsGroup)
-		);
-		
-		labelsFieldsLayout.setVerticalGroup(verticalGroup);							// sets the vertical group to put the lines in order;
-		labelsFieldsPanel.setLayout(labelsFieldsLayout);
-		mainPanel.add(labelsFieldsPanel);
+		final LabelFieldHolder labelFieldHolder = new LabelFieldHolder()
+				.addLine("Server IP Address", defaultIP, "ip", 15, 120)
+				.addLine("Server Port Number", defaultPort, "port", 5, 50)
+				.addLine("Nickname", "", "name", 15, 130)
+		;
+		mainPanel.add(labelFieldHolder);
 		
 		final JPanel txtObJPanel = new JPanel();
 		txtObJPanel.setAlignmentX(CENTER_ALIGNMENT);
@@ -131,7 +85,10 @@ public class ConfigDialog extends JFrame {
 		final ActionListener cmdListen = new ActionListener() {						// Detects user clicks on the 'OK' button or the 'Cancel' button.
 			public void actionPerformed(ActionEvent event) {
 				if (event.getActionCommand().equals("ok")) {						// If ok is pressed, check the fields and start the client:
-					final String ip = srvIPfield.getText().trim(), port = srvPortField.getText().trim(), nickname = nicknameField.getText().trim();
+					final String 	ip			=	labelFieldHolder.getField("ip").getText().trim(),
+									port		=	labelFieldHolder.getField("port").getText().trim(),
+									nickname	=	labelFieldHolder.getField("name").getText().trim();
+					
 					if (ip.matches("^[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}$")) {
 						if (port.matches("[0-9]+")) {
 							if (nickname.matches("\\p{Print}+")) {

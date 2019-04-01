@@ -67,15 +67,15 @@ public class ConfigDialog extends JFrame {
 		checksHolder.addNew("Refuse a new connection with an already existing nickname", serverSettings.checkNewClientName);
 		checksHolder.addNew("Check the client's IP address and port number", serverSettings.checkClientIPAndPort);
 		checksHolder.addNew("Kick a connected client on hack attempt", serverSettings.kickOnHack);
-		checksHolder.addNew("Delete content created by a kicked client", serverSettings.delKickedClient);
-		checksHolder.addNew("Limit a message's length", serverSettings.checkTxtLimit, new CheckBoxListener() {
+		checksHolder.addNew("Delete content created by a kicked client    [inactive]", serverSettings.delKickedClient);
+		checksHolder.addNew("Limit a message's length    [inactive]", serverSettings.checkTxtLimit, new CheckBoxListener() {
 			@Override public void onClick(JCheckBox checkBox) {
 				txtLimitFieldHolder.setVisible(checkBox.isSelected());
 				serverSettings.checkTxtLimit.setValue(checkBox.isSelected());
 				ConfigDialog.this.pack();
 			}
 		}, txtLimitFieldHolder);
-		checksHolder.addNew("Refuse two \"new\" actions from one client", serverSettings.checkTwoNews);
+		checksHolder.addNew("Refuse two \"new\" actions from one client    [inactive]", serverSettings.checkTwoNews);
 		checksHolder.createItemListener();
 		mainPanel.add(checksHolder);
 		

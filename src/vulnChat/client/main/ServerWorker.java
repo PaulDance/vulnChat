@@ -15,7 +15,7 @@ import vulnChat.data.Say;
  * of it.
  * 
  * @author Paul Mabileau
- * @version 0.3
+ * @version 0.4
  */
 public class ServerWorker implements Runnable {
 	private final Client client;
@@ -60,30 +60,21 @@ public class ServerWorker implements Runnable {
 					} while (serverMsg == null);
 				}
 				
-				if (client.settings.objTransmit.getValue()) {		// If an object has been received,
-					if (serverAction instanceof New) {				// parse it and print its result;
-						this.client.getInternals().getLinePrinter().println(serverAction.chatterName + " joined the channel.");
+				if (!client.settings.objTransmit.getValue()) {		// If an text has been received,
+					if (serverMsg.matches("[a-z]{3}\\s[\\p{Alnum}\\p{Punct}]{1,50}\\s?.{0,1000}")) {
+						serverAction = parseAction(serverMsg);		// parse it to an action;
 					}
-					else if (serverAction instanceof Bye) {
-						this.client.getInternals().getLinePrinter().println(serverAction.chatterName + " left the channel.");
-					}
-					else if (serverAction instanceof Say) {
-						final Say actionSay = (Say) serverAction; 
-						this.client.getInternals().getLinePrinter().println(actionSay.chatterName + ": " + actionSay.message);
-					}
-				}													// if text has been read and it respects the expected format,
-				else if (serverMsg.matches("[a-z]{3}\\s[\\p{Alnum}\\p{Punct}]{1,50}\\s?.{0,1000}")) {
-					String[] elements = serverMsg.split(" ", 3);	// separate the three elements of the message,
-					
-					if (elements[0].equals("new")) {				// "new" action -> a new user joind the channel,
-						this.client.getInternals().getLinePrinter().println(elements[1] + " joined the channel.");
-					}
-					else if (elements[0].equals("bye")) {			// "bye" action -> a user left the channel,
-						this.client.getInternals().getLinePrinter().println(elements[1] + " left the channel.");
-					}
-					else if (elements[0].equals("say")) {			// "say" action -> someone said something (probably useless, like always).
-						this.client.getInternals().getLinePrinter().println(elements[1] + ": " + elements[2]);
-					}
+				}
+				
+				if (serverAction instanceof New) {					// "new" action -> a new user joind the channel,
+					this.client.getInternals().getLinePrinter().println(serverAction.chatterName + " joined the channel.");
+				}
+				else if (serverAction instanceof Bye) {				// "bye" action -> a user left the channel,
+					this.client.getInternals().getLinePrinter().println(serverAction.chatterName + " left the channel.");
+				}
+				else if (serverAction instanceof Say) {				// "say" action -> someone said something (probably useless, like always).
+					final Say actionSay = (Say) serverAction; 
+					this.client.getInternals().getLinePrinter().println(actionSay.chatterName + ": " + actionSay.message);
 				}
 			}
 			catch (ClassNotFoundException exc) {}					// If the object is not from a known class, ignore.
@@ -95,6 +86,30 @@ public class ServerWorker implements Runnable {
 					exc.printStackTrace();
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Parses a given textual message that respects the expected standard format to an {@link Action}
+	 * object that can be easier to manipulate.
+	 *  
+	 * @param msg The textual transmission as a {@link String}
+	 * @return The {@link Action} object which is directly equivalent to the textual transmission.
+	 */
+	private static final Action parseAction(String msg) {
+		final String[] elements = msg.split(" ", 3);
+		
+		if (elements[0].equals("new")) {
+			return new New(elements[1]);
+		}
+		else if (elements[0].equals("bye")) {
+			return new Bye(elements[1]);
+		}
+		else if (elements[0].equals("say")) {
+			return new Say(elements[1], elements[2]);
+		}
+		else {
+			return null;
 		}
 	}
 	

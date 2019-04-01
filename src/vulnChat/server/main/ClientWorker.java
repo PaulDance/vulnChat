@@ -10,6 +10,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import vulnChat.data.Action;
+import vulnChat.data.Bye;
+import vulnChat.data.New;
+import vulnChat.data.Say;
 import vulnChat.server.data.ClientEntry;
 
 
@@ -22,7 +25,7 @@ import vulnChat.server.data.ClientEntry;
  * @see Thread
  * @see Server
  * @author Paul Mabileau
- * @version 0.1
+ * @version 0.4
  */
 public class ClientWorker implements Runnable {
 	private final Server server;
@@ -107,55 +110,55 @@ public class ClientWorker implements Runnable {
 					}
 				}
 				
-				if (this.server.getSettings().objTransmit.getValue()) {		// If object was received,
-					clientMsg = clientAction.toString();					// transform it to string to avoid duplicating tests.
-				}
-				
-				if (clientMsg.matches("[a-z]{3}\\s[\\p{Alnum}\\p{Punct}]{1,50}\\s?.{0,1000}")) {
-					final String[] elements = clientMsg.split(" ", 3);		// if the received message is in the correct format (action, [chatterName, [message]]), then parse it:
-					final ClientEntry clientEntry = this.server.getClientsMap().get(elements[1]);
-					
-					if (clientEntry == null || !this.server.getSettings().checkClientIPAndPort.getValue()
-					|| (clientEntry.ip.equals(this.commSocket.getInetAddress()) && clientEntry.port == this.commSocket.getPort())) {
-						if (elements[0].equals("new")) {					// "new": adds a newly connected client to the database and enables communication to others,
-							if (!(clientEntry != null && this.server.getSettings().checkNewClientName.getValue())) {
-								this.server.getClientsMap().put(elements[1], 	new ClientEntry(this.commSocket.getInetAddress(),
-																				this.commSocket.getPort(),
-																				txtInFromConnect, txtOutToConnect,
-																				objInFromConnect, objOutToConnect));
-								this.distribute(clientAction, clientMsg, elements[1]);
-								this.server.getLinePrinter().println("ok new");
-							}
-							else {											// but if the client lied and the server does not permit it,
-								this.server.getLinePrinter().println("not new");
-								this.kickIfOn(txtInFromConnect, txtOutToConnect, objInFromConnect, objOutToConnect);	// kick him in the butt;
-							}
-						}
-						else if (elements[0].equals("bye")) {				// "bye": terminates the connection;
-							if (clientEntry != null) {
-								clientEntry.close(this.server.getSettings().objTransmit.getValue());
-							}
-							this.server.getClientsMap().remove(elements[1]);
-							this.distribute(clientAction, clientMsg, elements[1]);
-							this.server.getLinePrinter().println("ok bye");
-						}
-						else if (elements[0].equals("say")) {				// "say": sends a message on the server for all the clients to receive;
-							this.distribute(clientAction, clientMsg, elements[1]);
-							this.server.getLinePrinter().println("ok say");
-						}
-						else {												// "$!?%$£": nothing interesting;
-							this.server.getLinePrinter().println("not an operation");
-							this.kickIfOn(txtInFromConnect, txtOutToConnect, objInFromConnect, objOutToConnect);
-						}
+				if (!this.server.getSettings().objTransmit.getValue()) {	// If text was received,
+					if (clientMsg.matches("[a-z]{3}\\s[\\p{Alnum}\\p{Punct}]{1,50}\\s?.{0," + Integer.toString(this.server.getSettings().txtLimit.getValue()) + "}")) {
+						clientAction = parseAction(clientMsg);				// transform it to action to avoid duplicating tests.
 					}
 					else {
-						this.server.getLinePrinter().println("wrong IP or port");	// wrong IP or port number: ignore
-						this.kickIfOn(txtInFromConnect, txtOutToConnect, objInFromConnect, objOutToConnect);	// and kick if activated by the server;
+						this.server.getLinePrinter().println("not a msg");	// wrong format: ignore
+						this.kickIfOn(txtInFromConnect, txtOutToConnect, objInFromConnect, objOutToConnect);	// and kick if activated by the server.
+					}
+				}
+				
+				final ClientEntry clientEntry = this.server.getClientsMap().get(clientAction.chatterName);
+				
+				if (clientEntry == null || !this.server.getSettings().checkClientIPAndPort.getValue()
+				|| (clientEntry.ip.equals(this.commSocket.getInetAddress()) && clientEntry.port == this.commSocket.getPort())) {
+					if (clientAction instanceof New) {						// "new": adds a newly connected client to the database and enables communication to others,
+						if (!(clientEntry != null && this.server.getSettings().checkNewClientName.getValue())) {
+							this.server.getClientsMap().put(clientAction.chatterName,
+									new ClientEntry(this.commSocket.getInetAddress(),
+											this.commSocket.getPort(),
+											txtInFromConnect, txtOutToConnect,
+											objInFromConnect, objOutToConnect));
+							this.distribute(clientAction, clientMsg, clientAction.chatterName);
+							this.server.getLinePrinter().println("ok new");
+						}
+						else {												// but if the client lied and the server does not permit it,
+							this.server.getLinePrinter().println("not new");
+							this.kickIfOn(txtInFromConnect, txtOutToConnect, objInFromConnect, objOutToConnect);	// kick him in the butt;
+						}
+					}
+					else if (clientAction instanceof Bye) {					// "bye": terminates the connection;
+						if (clientEntry != null) {
+							clientEntry.close(this.server.getSettings().objTransmit.getValue());
+						}
+						this.server.getClientsMap().remove(clientAction.chatterName);
+						this.distribute(clientAction, clientMsg, clientAction.chatterName);
+						this.server.getLinePrinter().println("ok bye");
+					}
+					else if (clientAction instanceof Say) {					// "say": sends a message on the server for all the clients to receive;
+						this.distribute(clientAction, clientMsg, clientAction.chatterName);
+						this.server.getLinePrinter().println("ok say");
+					}
+					else {													// "$!?%$£": nothing interesting;
+						this.server.getLinePrinter().println("not an operation");
+						this.kickIfOn(txtInFromConnect, txtOutToConnect, objInFromConnect, objOutToConnect);
 					}
 				}
 				else {
-					this.server.getLinePrinter().println("not a msg");		// wrong format: ignore
-					this.kickIfOn(txtInFromConnect, txtOutToConnect, objInFromConnect, objOutToConnect);		// and kick if activated by the server.
+					this.server.getLinePrinter().println("wrong IP or port");	// wrong IP or port number: ignore
+					this.kickIfOn(txtInFromConnect, txtOutToConnect, objInFromConnect, objOutToConnect);	// and kick if activated by the server;
 				}
 			}
 			catch (ClassNotFoundException e) {}								// If unknown class received, ignore;
@@ -173,6 +176,30 @@ public class ClientWorker implements Runnable {
 			this.kick(txtInFromConnect, txtOutToConnect, objInFromConnect, objOutToConnect);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Parses a given textual message that respects the expected standard format to an {@link Action}
+	 * object that can be easier to manipulate.
+	 *  
+	 * @param msg The textual transmission as a {@link String}
+	 * @return The {@link Action} object which is directly equivalent to the textual transmission.
+	 */
+	private static final Action parseAction(String msg) {
+		final String[] elements = msg.split(" ", 3);
+		
+		if (elements[0].equals("new")) {
+			return new New(elements[1]);
+		}
+		else if (elements[0].equals("bye")) {
+			return new Bye(elements[1]);
+		}
+		else if (elements[0].equals("say")) {
+			return new Say(elements[1], elements[2]);
+		}
+		else {
+			return null;
 		}
 	}
 	

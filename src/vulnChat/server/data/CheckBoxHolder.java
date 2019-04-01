@@ -147,7 +147,7 @@ public class CheckBoxHolder extends JPanel {
 		this.add(entry.checkBox);
 		
 		if (holder != null) {
-			this.add(holder, SwingConstants.SOUTH_EAST);
+			this.add(holder, SwingConstants.SOUTH);
 		}
 	}
 	
